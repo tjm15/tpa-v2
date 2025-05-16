@@ -1,10 +1,18 @@
 <script lang="ts">
-    // This will be the main page for Site Allocation Mode
-    // It will use the ThreeZoneLayout
-    // For now, just a placeholder
+	import ThreeZoneLayout from '$lib/components/layouts/ThreeZoneLayout.svelte';
+	import SiteNavigator from '$lib/components/site/SiteNavigator.svelte';
+	import SiteContextView from '$lib/components/site/SiteContextView.svelte';
+	import DeliverabilitySoundnessPanel from '$lib/components/site/DeliverabilitySoundnessPanel.svelte';
 </script>
 
-<div class="p-4">
-    <h1 class="text-xl font-semibold">Site Allocation Mode</h1>
-    <p>Content for Site Allocation Mode will go here, structured within the ThreeZoneLayout via the root +layout.svelte.</p>
-</div>
+<ThreeZoneLayout>
+	<div slot="left-sidebar" class="h-full">
+		<SiteNavigator />
+	</div>
+	<div slot="central-panel" class="h-full bg-slate-50">
+		<SiteContextView />
+	</div>
+	<div slot="right-sidebar" class="h-full bg-slate-50">
+		<DeliverabilitySoundnessPanel />
+	</div>
+</ThreeZoneLayout>

@@ -47,7 +47,8 @@ export function loadInitialData() {
 }
 
 // --- Utility Functions ---
-export function findPolicy(id: string): Policy | undefined { return get(policies).find(p => p.id === id); }
+export function getPolicyById(id: string): Policy | undefined { return get(policies).find((p: Policy) => p.id === id); }
+export function findPolicy(id: string): Policy | undefined { return get(policies).find((p: Policy) => p.id === id); }
 export function findSite(id: string): Site | undefined { return get(sites).find(s => s.id === id); }
 export function findConstraint(id: string): Constraint | undefined { return get(constraints).find(c => c.id === id); }
 export function findApplication(id: string): PlanningApplication | undefined { return get(planningApplications).find(app => app.id === id); }

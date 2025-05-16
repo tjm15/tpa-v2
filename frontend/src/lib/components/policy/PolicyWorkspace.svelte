@@ -35,8 +35,8 @@
 			// Update other fields
 		};
 		// Update in the store
-		policies.update(all => {
-			const index = all.findIndex(p => p.id === updatedPolicy.id);
+		policies.update((all: Policy[]) => {
+			const index = all.findIndex((p: Policy) => p.id === updatedPolicy.id);
 			if (index !== -1) {
 				all[index] = updatedPolicy;
 			}

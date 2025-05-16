@@ -11,7 +11,7 @@
 	let currentSelectedDocumentId: string | null = get(selectedDocumentIdStore); // Initialize with current store value
 
 	// Subscribe to selectedDocumentIdStore to keep currentSelectedDocumentId in sync
-	const unsubscribeSelectedDocId = selectedDocumentIdStore.subscribe(value => {
+	const unsubscribeSelectedDocId = selectedDocumentIdStore.subscribe((value: string | null) => {
 		currentSelectedDocumentId = value;
 	});
 
@@ -19,7 +19,7 @@
 	onMount(() => {
 		const planDocuments = get(allPlanDocumentsStore);
 		if (!currentSelectedDocumentId && planDocuments.length > 0) {
-			const localPlan = planDocuments.find(doc => doc.type === 'Local Plan');
+			const localPlan = planDocuments.find((doc: PlanDocument) => doc.type === 'Local Plan');
 			if (localPlan) {
 				selectedDocumentIdStore.set(localPlan.id);
 			} else {
@@ -36,14 +36,14 @@
 		
 		let policiesToFilter = $allPolicies;
 		if ($selectedDocumentId) {
-			policiesToFilter = policiesToFilter.filter(p => p.documentId === $selectedDocumentId);
+			policiesToFilter = policiesToFilter.filter((p: Policy) => p.documentId === $selectedDocumentId);
 		}
 		if (!searchTermLocal.trim()) {
 			filteredPolicies = policiesToFilter;
 		} else {
 			const lowerSearchTerm = searchTermLocal.toLowerCase();
 			filteredPolicies = policiesToFilter.filter(
-				(policy) =>
+				(policy: Policy) =>
 					policy.title.toLowerCase().includes(lowerSearchTerm) ||
 					policy.reference.toLowerCase().includes(lowerSearchTerm) ||
 					(policy.wording && policy.wording.toLowerCase().includes(lowerSearchTerm)) // Added check for wording existence
@@ -53,13 +53,13 @@
 
     let availableDocuments: PlanDocument[] = [];
     $: {
-        availableDocuments = get(allPlanDocumentsStore).filter(doc => doc.type === 'Local Plan' || doc.type === 'SPD');
+        availableDocuments = get(allPlanDocumentsStore).filter((doc: PlanDocument) => doc.type === 'Local Plan' || doc.type === 'SPD');
     }
 
     let totalPoliciesInSelectedDocument = 0;
     $: {
         const $allPolicies = get(allPoliciesStore);
-        totalPoliciesInSelectedDocument = $allPolicies.filter(p => !currentSelectedDocumentId || p.documentId === currentSelectedDocumentId).length;
+        totalPoliciesInSelectedDocument = $allPolicies.filter((p: Policy) => !currentSelectedDocumentId || p.documentId === currentSelectedDocumentId).length;
     }
 
 
@@ -99,20 +99,20 @@
                 No policies found{searchTermLocal ? ' for "' + searchTermLocal + '"' : ''}{currentSelectedDocumentId ? ' in selected document.' : '.'}
             </p>
 		{:else}
-			<ul>
+            <ul role="listbox" aria-label="Policies" class="focus:outline-none">
 				{#each filteredPolicies as policy (policy.id)}
 					<li
-						class="border-b border-gray-200 hover:bg-gray-50 focus-within:bg-gray-100 {$selectedPolicyId === policy.id ? 'bg-blue-50 border-l-4 border-blue-500' : 'border-l-4 border-transparent'}"
-                        role="button"
-						tabindex="0"
+                        id="policy-option-{policy.id}"
+						class="border-b border-gray-200 hover:bg-gray-50 focus-within:bg-gray-100 cursor-pointer {$selectedPolicyId === policy.id ? 'bg-blue-100 border-l-4 border-blue-600' : 'border-l-4 border-transparent'}"
+                        role="option"
+						tabindex="0" 
+						aria-selected={$selectedPolicyId === policy.id}
 						on:click={() => selectPolicy(policy.id)}
-						on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') selectPolicy(policy.id); }}
-						aria-pressed={$selectedPolicyId === policy.id}
-                        aria-label="Select policy {policy.reference} {policy.title}"
+						on:keydown={(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectPolicy(policy.id); }}}
 					>
 						<div class="p-3">
 							<div class="flex justify-between items-center mb-1">
-								<h3 class="text-sm font-semibold text-blue-600">{policy.reference} - {policy.title}</h3>
+								<h3 class="text-sm font-semibold text-blue-700">{policy.reference} - {policy.title}</h3>
 							</div>
 							<div class="flex space-x-2">
 								<Badge text={policy.type} color="blue" />

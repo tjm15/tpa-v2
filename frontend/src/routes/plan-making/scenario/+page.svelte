@@ -1,10 +1,18 @@
 <script lang="ts">
-    // This will be the main page for Scenario Mode
-    // It will use the ThreeZoneLayout
-    // For now, just a placeholder
+	import ThreeZoneLayout from '$lib/components/layouts/ThreeZoneLayout.svelte';
+	import ScenarioSwitcher from '$lib/components/scenario/ScenarioSwitcher.svelte';
+	import ScenarioDashboard from '$lib/components/scenario/ScenarioDashboard.svelte';
+	import ScenarioGoalEvaluationPanel from '$lib/components/scenario/ScenarioGoalEvaluationPanel.svelte';
 </script>
 
-<div class="p-4">
-    <h1 class="text-xl font-semibold">Scenario Mode</h1>
-    <p>Content for Scenario Mode will go here, structured within the ThreeZoneLayout via the root +layout.svelte.</p>
-</div>
+<ThreeZoneLayout>
+	<div slot="left-sidebar" class="h-full">
+		<ScenarioSwitcher />
+	</div>
+	<div slot="central-panel" class="h-full bg-slate-50">
+		<ScenarioDashboard />
+	</div>
+	<div slot="right-sidebar" class="h-full bg-slate-50">
+		<ScenarioGoalEvaluationPanel />
+	</div>
+</ThreeZoneLayout>
