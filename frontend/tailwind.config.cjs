@@ -1,11 +1,9 @@
 module.exports = {
-  content: [
-    './src/**/*.{html,js,svelte,ts}',
-  ],
+  content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: {
-    extend: {
-      // Add your custom colors and font here if needed
-    },
+    extend: {},
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'), // Add this line
+  ],
 };
