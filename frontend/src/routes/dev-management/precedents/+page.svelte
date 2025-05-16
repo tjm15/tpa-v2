@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SearchFilterPanel from '$lib/components/shared/SearchFilterPanel.svelte';
-	import EntityList from '$lib/components/shared/EntityList.svelte';
+	import PrecedentCard from '$lib/components/dm/PrecedentCard.svelte';
 	import ItemDetailView from '$lib/components/shared/ItemDetailView.svelte';
 	import { precedentCases } from '$lib/stores/mainDataStore';
 	import type { PrecedentCase } from '$types/models';
@@ -27,7 +27,22 @@
 	<!-- Central: Precedent List -->
 	<div class="flex-1 p-4 border-r overflow-y-auto">
 		<h2 class="text-xl font-semibold mb-3">Precedent Cases ({filteredPrecedents.length})</h2>
-		<EntityList items={filteredPrecedents} on:itemSelected={handleSelected} />
+		<div class="space-y-3">
+			{#if filteredPrecedents.length > 0}
+				{#each filteredPrecedents as precedent (precedent.id)}
+					<button
+						type="button"
+						on:click={() => handleSelected(new CustomEvent('itemSelected', { detail: { item: precedent } }))}
+						aria-pressed={selectedPrecedent && selectedPrecedent.id === precedent.id}
+						class="w-full text-left outline-none focus:ring-2 focus:ring-blue-400"
+					>
+						<PrecedentCard {precedent} />
+					</button>
+				{/each}
+			{:else}
+				<p class="text-gray-500">No precedents found.</p>
+			{/if}
+		</div>
 	</div>
 	<!-- Right: Precedent Details -->
 	<div class="w-1/3 min-w-[350px] p-4 overflow-y-auto">

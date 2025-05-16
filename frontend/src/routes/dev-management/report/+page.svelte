@@ -3,6 +3,7 @@
 	import { planningApplications } from '$lib/stores/mainDataStore';
 	import type { PlanningApplication, OfficerReportSection } from '$types/models';
 	import { get } from 'svelte/store';
+	import OfficerReportSectionCard from '$lib/components/dm/OfficerReportSectionCard.svelte';
 
 	let allApps: PlanningApplication[] = get(planningApplications);
 	let selectedApp: PlanningApplication | null = null;
@@ -33,13 +34,27 @@
 		<EntityList items={allApps} on:itemSelected={handleAppSelected} />
 		{#if selectedApp && selectedApp.officerReport}
 			<h2 class="text-lg font-semibold mb-3 mt-6">Report Structure</h2>
-			<EntityList items={selectedApp.officerReport.sections} on:itemSelected={handleSectionSelected} />
+			<div class="space-y-3">
+				{#each selectedApp.officerReport.sections as section (section.id)}
+					<button
+						type="button"
+						on:click={() => handleSectionSelected(new CustomEvent('sectionSelected', { detail: { item: section } }))}
+						aria-pressed={selectedSection && selectedSection.id === section.id}
+						class="w-full text-left outline-none focus:ring-2 focus:ring-blue-400"
+					>
+						<OfficerReportSectionCard section={section} />
+					</button>
+				{/each}
+			</div>
 		{/if}
 	</div>
 	<!-- Central: Section Editor -->
 	<div class="flex-1 p-4 border-r flex flex-col">
 		<h2 class="text-xl font-semibold mb-3">Editing Section</h2>
 		{#if selectedSection}
+			<div class="mb-4">
+				<OfficerReportSectionCard section={selectedSection} />
+			</div>
 			<textarea class="flex-grow w-full p-2 border rounded resize-none" bind:value={sectionContent} placeholder="Enter section content here..."></textarea>
 			<button class="mt-2 p-2 bg-green-500 text-white rounded hover:bg-green-600" on:click={saveSection}>Save Section (Mock)</button>
 		{:else}

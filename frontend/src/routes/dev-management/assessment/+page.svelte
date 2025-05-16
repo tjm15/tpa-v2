@@ -3,8 +3,8 @@
 	// Skeleton structure for DM mode, ready for further development
 	import SearchFilterPanel from '$lib/components/shared/SearchFilterPanel.svelte';
 	import MapDisplay from '$lib/components/shared/MapDisplay.svelte';
-	import EntityList from '$lib/components/shared/EntityList.svelte';
-	import ConstraintChip from '$lib/components/shared/ConstraintChip.svelte';
+	import PolicyCard from '$lib/components/dm/PolicyCard.svelte';
+	import ConstraintDisplay from '$lib/components/dm/ConstraintDisplay.svelte';
 	import { planningApplications, sites } from '$lib/stores/mainDataStore';
 	import type { PlanningApplication, Site, Constraint, Policy } from '$types/models';
 	import { get } from 'svelte/store';
@@ -50,13 +50,22 @@
 	<!-- Right: Policies/Constraints -->
 	<div class="w-1/4 min-w-[300px] p-4 overflow-y-auto">
 		<h3 class="text-lg font-semibold mb-3">Applicable Policies</h3>
-		<EntityList items={applicablePolicies} />
+		<div class="space-y-3">
+			{#if applicablePolicies.length > 0}
+				{#each applicablePolicies as policy (policy.id)}
+					<PolicyCard {policy} />
+				{/each}
+			{:else}
+				<p class="text-gray-500">No applicable policies for this selection.</p>
+			{/if}
+		</div>
 		<h3 class="text-lg font-semibold mt-6 mb-3">Overlapping Constraints</h3>
-		<div class="space-y-2">
-			{#each siteConstraints as constraint (constraint.id)}
-				<ConstraintChip {constraint} />
-			{/each}
-			{#if siteConstraints.length === 0}
+		<div class="space-y-3">
+			{#if siteConstraints.length > 0}
+				{#each siteConstraints as constraint (constraint.id)}
+					<ConstraintDisplay {constraint} />
+				{/each}
+			{:else}
 				<p class="text-gray-500">No constraints for this selection.</p>
 			{/if}
 		</div>

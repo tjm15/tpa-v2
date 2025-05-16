@@ -3,6 +3,7 @@
 	import { planningApplications } from '$lib/stores/mainDataStore';
 	import type { PlanningApplication, Policy } from '$types/models';
 	import { get } from 'svelte/store';
+	import PolicyCard from '$lib/components/dm/PolicyCard.svelte';
 
 	let allApps: PlanningApplication[] = get(planningApplications);
 	let selectedApp: PlanningApplication | null = null;
@@ -41,17 +42,17 @@
 			{#each selectedStep.policyReferences as ref}
 				{#if selectedApp.relevantPolicies}
 					{#each selectedApp.relevantPolicies.filter(p => p.reference === ref) as policy}
-						<button type="button" class="mb-4 cursor-pointer text-left w-full" on:click={() => handlePolicySelected(policy)} on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && handlePolicySelected(policy)} tabindex="0">
-							<strong>{policy.reference}</strong>: {policy.title}
-						</button>
+						<div class="mb-4">
+							<button type="button" class="w-full text-left focus:outline-none focus:ring-2 focus:ring-blue-400 rounded" on:click={() => handlePolicySelected(policy)} on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && handlePolicySelected(policy)} tabindex="0" aria-pressed={selectedPolicy && selectedPolicy.reference === policy.reference}>
+								<PolicyCard policy={policy} />
+							</button>
+						</div>
 					{/each}
 				{/if}
 			{/each}
 			{#if selectedPolicy}
 				<div class="prose prose-sm max-w-none mt-4">
-					<h3>{selectedPolicy.reference}: {selectedPolicy.title}</h3>
-					<p><strong>Requirements Summary:</strong> {selectedPolicy.requirementsSummary || 'N/A'}</p>
-					{@html selectedPolicy.wording}
+					<PolicyCard policy={selectedPolicy} />
 				</div>
 			{/if}
 		{:else}
