@@ -3,6 +3,8 @@ import type {
 	Policy, Site, Scenario, Goal, PlanDocument, Constraint,
 	PlanningApplication, PrecedentCase, OfficerReport, DocumentNode, SiteAssessmentResponse
 } from '$types/models';
+import { get } from 'svelte/store';
+import { sites, policies, planningApplications } from '$lib/stores/mainDataStore';
 
 // --- Counters for unique IDs ---
 let policyIdCounter = 1;
@@ -12,13 +14,14 @@ let goalIdCounter = 1;
 let documentIdCounter = 1;
 let documentNodeIdCounter = 1;
 let constraintIdCounter = 1;
-let appIdCounter = 1;
+let appIDC = { val: 1 };
 let precedentIdCounter = 1;
 let reportSectionIdCounter = 1;
 
 const generateId = (prefix: string, counter: { val: number }) => `${prefix}-${counter.val++}`;
 const policyIDC = { val: 1 }; // Pass objects to allow modification within functions
 const siteIDC = { val: 1 };
+const constraintIDC = { val: 1 };
 // ... and so on for all counters
 
 // --- Mock Data Functions (Expanded) ---
@@ -91,21 +94,24 @@ export function getMockConstraints(): Constraint[] {
 }
 
 export function getMockPlanningApplications(): PlanningApplication[] {
-    const site1 = get(sites).find(s => s.id === 'site-1'); // Assuming 'site-1' is the ID of Greenfield North
-	return [
-		{
-			id: generateId('app', appIdCounter),
-			referenceNumber: '25/00123/FUL',
-			address: site1?.address || 'Land North of Old Mill Lane, Northwood',
+    const site1 = get(sites).find((s: Site) => s.id === 'site-1');
+    return [
+        {
+            id: generateId('app', appIDC),
+            referenceNumber: '25/00123/FUL',
+            address: site1?.address || 'Land North of Old Mill Lane, Northwood',
             siteId: site1?.id,
-			proposalDetails: 'Erection of 145 dwellings with associated access, landscaping and infrastructure.',
-			applicationType: 'Full',
-			status: 'Under Assessment',
-			receivedDate: '2025-01-15',
+            proposalDetails: 'Erection of 145 dwellings with associated access, landscaping and infrastructure.',
+            applicationType: 'Full',
+            status: 'Under Assessment',
+            receivedDate: '2025-01-15',
             validatedDate: '2025-01-22',
             caseOfficer: 'Jane Doe',
             constraints: site1?.constraints, // From the site or assessed separately
-            relevantPolicies: [get(policies).find(p=>p.reference==='H1')!, get(policies).find(p=>p.reference==='DM12')!], // Example
+            relevantPolicies: [
+                get(policies).find((p: Policy) => p.reference === 'H1')!,
+                get(policies).find((p: Policy) => p.reference === 'DM12')!
+            ],
             reasoningSteps: [
                 { step: 1, description: "Assess compliance with housing mix policy H1.", policyReferences: ['H1']},
                 { step: 2, description: "Evaluate design against DM12 criteria.", policyReferences: ['DM12']},
@@ -114,24 +120,24 @@ export function getMockPlanningApplications(): PlanningApplication[] {
                 competingGoals: [{goalA: "Housing Delivery", goalB: "Landscape Impact (AONB buffer)", tension: "Balancing need for homes with landscape protection."}],
                 aiNarrative: "The proposal contributes significantly to housing targets but requires careful mitigation for AONB proximity."
             }
-		},
+        },
         {
-			id: generateId('app', appIdCounter),
-			referenceNumber: '25/00200/OUT',
-			address: 'Brownfield Site, Central Town',
-			proposalDetails: 'Outline application for mixed-use development (up to 50 dwellings and 500sqm commercial).',
-			applicationType: 'Outline',
-			status: 'Received',
-			receivedDate: '2025-03-10',
+            id: generateId('app', appIDC),
+            referenceNumber: '25/00200/OUT',
+            address: 'Brownfield Site, Central Town',
+            proposalDetails: 'Outline application for mixed-use development (up to 50 dwellings and 500sqm commercial).',
+            applicationType: 'Outline',
+            status: 'Received',
+            receivedDate: '2025-03-10',
             caseOfficer: 'John Smith',
-		},
-	];
+        },
+    ];
 }
 
 export function getMockPrecedentCases(): PrecedentCase[] {
     return [
         {
-            id: generateId('prec', precedentIdCounter),
+            id: generateId('prec', { val: precedentIdCounter }),
             caseReference: 'APP/X1234/W/23/987654',
             address: 'Similar Site, Adjoining LPA',
             decisionType: 'Appeal Decision',
@@ -144,9 +150,68 @@ export function getMockPrecedentCases(): PrecedentCase[] {
     ];
 }
 
-export function getMockScenarios(): Scenario[] { /* ... as before ... */ return []; }
-export function getMockGoals(): Goal[] { /* ... as before, ensure IDs match alignments ... */ return []; }
-export function getMockDocuments(): PlanDocument[] { /* ... as before ... */ return []; }
+export function getMockGoals(): Goal[] {
+    return [
+        {
+            id: 'goal-1',
+            name: 'Housing Delivery Target',
+            category: 'Policy',
+            description: 'Deliver at least 150 new homes by 2026.',
+            targetMetric: 'homes',
+            targetValue: 150,
+            currentValue: 150,
+            status: 'On Track',
+            type: 'Policy',
+        }
+    ];
+}
+
+export function getMockDocuments(): PlanDocument[] {
+    return [
+        {
+            id: 'lp2025',
+            name: 'Local Plan 2025',
+            type: 'Local Plan',
+            rootNode: {
+                id: 'root-1',
+                title: 'Root',
+                type: 'DocumentRoot',
+                children: []
+            },
+            version: '1.0',
+            documentStatus: 'Adopted',
+        }
+    ];
+}
+
+export function getMockScenarios(): Scenario[] {
+    return [
+        {
+            id: 'scen-1',
+            name: 'Baseline Scenario',
+            description: 'All currently allocated sites and adopted policies.',
+            activePolicyIds: ['pol-1', 'pol-2'],
+            includedSiteIds: ['site-1'],
+            summaryMetrics: { totalHomes: 150, jobsEnabled: 20, riskFlags: 1 },
+            goalPerformance: [
+                { goalId: 'goal-1', status: 'On Track', value: 150 }
+            ],
+            createdAt: '2025-01-01T00:00:00Z',
+        },
+        {
+            id: 'scen-2',
+            name: 'Growth Scenario',
+            description: 'Includes all baseline sites plus additional brownfield allocations.',
+            activePolicyIds: ['pol-1', 'pol-2'],
+            includedSiteIds: ['site-1'],
+            summaryMetrics: { totalHomes: 200, jobsEnabled: 40, riskFlags: 2 },
+            goalPerformance: [
+                { goalId: 'goal-1', status: 'On Track', value: 200 }
+            ],
+            createdAt: '2025-02-01T00:00:00Z',
+        }
+    ];
+}
 
 // Adapt existing getMockAssessment or dmMockData functions
 // This function can now be more robust by pulling from the new mock entities.

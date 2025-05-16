@@ -46,34 +46,24 @@
 			<MapDisplay site={currentSite} constraintsToDisplay={siteConstraints} />
 		</div>
 
-		<div class="flex-1 overflow-y-auto">
+		<div class="flex-1 min-h-0 flex flex-col">
             <Card additionalClasses="h-full flex flex-col" noBodyPadding>
-                <div class="flex border-b border-gray-200 px-2 pt-2">
-                    <button
-                        class="px-4 py-2 -mb-px border-b-2 font-medium text-sm focus:outline-none {activeTab === 'policy' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
-                        on:click={() => activeTab = 'policy'}
-                    >
-                        Policy Requirements
-                    </button>
-                    <button
-                        class="px-4 py-2 -mb-px border-b-2 font-medium text-sm focus:outline-none {activeTab === 'draft' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
-                        on:click={() => activeTab = 'draft'}
-                    >
-                        Allocation Draft
-                    </button>
+                <div class="flex border-b border-gray-200">
+                    <button class="px-4 py-2 text-sm font-medium focus:outline-none focus:bg-gray-100" class:font-bold={activeTab === 'policy'} on:click={() => activeTab = 'policy'}>Policy Requirements</button>
+                    <button class="px-4 py-2 text-sm font-medium focus:outline-none focus:bg-gray-100" class:font-bold={activeTab === 'draft'} on:click={() => activeTab = 'draft'}>Allocation Draft</button>
                 </div>
-                <div class="flex-1 overflow-y-auto p-2 md:p-3">
+                <div class="flex-1 overflow-y-auto min-h-0">
                     {#if activeTab === 'policy'}
                         <PolicyRequirementsTab site={currentSite} />
-                    {:else if activeTab === 'draft'}
+                    {:else}
                         <AllocationDraftTab site={currentSite} />
                     {/if}
                 </div>
             </Card>
-		</div>
+        </div>
 	{:else}
-		<div class="flex items-center justify-center h-full">
-			<p class="text-gray-500 p-10 text-center">Select a site from the navigator to view its context, applicable policies, and draft allocation notes.</p>
+		<div class="flex-1 flex items-center justify-center text-gray-400">
+			<p>Select a site to view details.</p>
 		</div>
 	{/if}
 </div>

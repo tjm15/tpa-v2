@@ -23,7 +23,7 @@
     };
 </script>
 
-<div class="p-4 md:p-6 h-full flex flex-col space-y-4 overflow-y-auto">
+<div class="flex-1 min-h-0 flex flex-col space-y-4">
 	{#if currentScenario}
 		<div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 mb-4">
             <Card title="🏡 Homes Delivered" titleClasses="text-sm font-medium" bodyClasses="p-3 text-center">

@@ -2,7 +2,7 @@
 import { writable, get } from 'svelte/store';
 import type {
 	Policy, Site, Scenario, Goal, PlanDocument, Constraint,
-	PlanningApplication, PrecedentCase, OfficerReport, SiteAssessmentResponse
+	PlanningApplication, PrecedentCase, OfficerReport, SiteAssessmentResponse, DocumentNode
 } from '$types/models';
 import {
 	getMockPolicies, getMockSites, getMockScenarios, getMockGoals, getMockDocuments,
@@ -52,7 +52,21 @@ export function findPolicy(id: string): Policy | undefined { return get(policies
 export function findSite(id: string): Site | undefined { return get(sites).find(s => s.id === id); }
 export function findConstraint(id: string): Constraint | undefined { return get(constraints).find(c => c.id === id); }
 export function findApplication(id: string): PlanningApplication | undefined { return get(planningApplications).find(app => app.id === id); }
-// ... more finders for scenarios, goals, documents, precedents etc.
+
+// Find a DocumentNode by id in a PlanDocument
+export function findDocumentNode(document: PlanDocument, nodeId: string): DocumentNode | null {
+    function search(node: DocumentNode): DocumentNode | null {
+        if (node.id === nodeId) return node;
+        if (node.children) {
+            for (const child of node.children) {
+                const found = search(child);
+                if (found) return found;
+            }
+        }
+        return null;
+    }
+    return document.rootNode ? search(document.rootNode) : null;
+}
 
 // Functions from your existing stores that might be merged or adapted:
 // from planStore.ts: setPlanAssessment, usePlanAssessment

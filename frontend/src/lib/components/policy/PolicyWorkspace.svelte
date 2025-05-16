@@ -46,7 +46,7 @@
 	}
 </script>
 
-<div class="p-4 md:p-6 h-full flex flex-col space-y-4 overflow-y-auto">
+<div class="flex-1 min-h-0 flex flex-col space-y-4">
 	{#if currentPolicy}
 		<Card additionalClasses="flex-shrink-0">
 			<div slot="title" class="flex justify-between items-center">

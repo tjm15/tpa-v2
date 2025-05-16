@@ -12,7 +12,9 @@
 	import { goto } from '$app/navigation';
 	import type { ActiveWorkspace, PlanMakingMode, DevelopmentManagementMode, ActiveMode } from '$lib/types/models';
 
-	// Define Workspaces and their Modes
+	export let data: { initialWorkspace: ActiveWorkspace, initialMode: ActiveMode };
+
+	// Workspace definitions (can stay here or be imported if shared with +layout.ts carefully)
 	interface ModeDefinition {
 		id: PlanMakingMode | DevelopmentManagementMode;
 		label: string;
@@ -55,117 +57,77 @@
 	];
 
 	let currentWorkspaceModes: ModeDefinition[] = [];
+	let dataLoaded = false;
 
 	onMount(() => {
-		loadInitialData(); // Load mock data
-
-		// Determine initial workspace and mode from URL
-		const currentPath = $page.url.pathname;
-		let foundWorkspace: ActiveWorkspace | null = null;
-		let foundMode: ActiveMode | null = null;
-
-		for (const ws of workspaces) {
-			if (currentPath.startsWith(ws.hrefBase)) {
-				foundWorkspace = ws.id;
-				const mode = ws.modes.find(m => currentPath.startsWith(m.href));
-				foundMode = mode ? mode.id : ws.defaultMode;
-				break;
-			}
+		if (!dataLoaded) {
+			loadInitialData();
+			dataLoaded = true;
 		}
-
-		if (foundWorkspace) {
-			activeWorkspace.set(foundWorkspace);
-			activeMode.set(foundMode);
-		} else if (currentPath === '/' || currentPath.startsWith('/dashboard')) {
-			activeWorkspace.set('dashboard');
-			activeMode.set(null);
-		} else {
-            // If no match, redirect to dashboard or a default workspace
-            goto('/dashboard', { replaceState: true });
-            activeWorkspace.set('dashboard');
-        }
+		if (data.initialWorkspace !== $activeWorkspace || data.initialMode !== $activeMode) {
+			setActiveWorkspace(data.initialWorkspace, data.initialMode);
+		}
 	});
 
-	// Update sub-navigation (modes) when workspace changes
+	$: {
+		if ($page.data.initialWorkspace !== undefined && $page.data.initialMode !== undefined) {
+			if ($page.data.initialWorkspace !== $activeWorkspace || $page.data.initialMode !== $activeMode) {
+				setActiveWorkspace($page.data.initialWorkspace, $page.data.initialMode);
+			}
+		}
+	}
+
 	$: {
 		const ws = workspaces.find(w => w.id === $activeWorkspace);
 		currentWorkspaceModes = ws ? ws.modes : [];
 	}
 
-	// Update stores when SvelteKit navigation changes (e.g. browser back/forward)
-	$: {
-		const currentPath = $page.url.pathname;
-		let newWs: ActiveWorkspace | null = null;
-		let newMode: ActiveMode | null = null;
-
-		if (currentPath === '/' || currentPath.startsWith('/dashboard')) {
-			newWs = 'dashboard';
-		} else {
-			for (const wsDef of workspaces) {
-				if (currentPath.startsWith(wsDef.hrefBase)) {
-					newWs = wsDef.id;
-					const modeDef = wsDef.modes.find(m => currentPath.startsWith(m.href));
-					newMode = modeDef ? modeDef.id : wsDef.defaultMode;
-					break;
-				}
-			}
+	function handleWorkspaceNavigation(targetWorkspaceId: ActiveWorkspace) {
+		const targetWsDef = workspaces.find(ws => ws.id === targetWorkspaceId);
+		if (targetWsDef) {
+			const targetHref = targetWsDef.modes.find(m => m.id === targetWsDef.defaultMode)?.href || targetWsDef.hrefBase;
+			goto(targetHref);
+		} else if (targetWorkspaceId === 'dashboard') {
+			goto('/dashboard');
 		}
-		
-		if (newWs && $activeWorkspace !== newWs) {
-			activeWorkspace.set(newWs);
-		}
-		if (newMode && $activeMode !== newMode && newWs !== 'dashboard') {
-			activeMode.set(newMode);
-		} else if (newWs === 'dashboard' && $activeMode !== null) {
-            activeMode.set(null);
-        }
-
-	}
-
-	function handleWorkspaceChange(wsId: ActiveWorkspace) {
-		const newWsDef = workspaces.find(ws => ws.id === wsId);
-		if (newWsDef) {
-			setActiveWorkspace(newWsDef.id, newWsDef.defaultMode); // uiStateStore function
-			goto(newWsDef.modes.find(m => m.id === newWsDef.defaultMode)?.href || newWsDef.hrefBase);
-		} else if (wsId === 'dashboard') {
-            setActiveWorkspace('dashboard', null);
-            goto('/dashboard');
-        }
 	}
 
 	function handleModeNavigation(href: string, modeId: ActiveMode) {
-		setActiveModeInCurrentWorkspace(modeId); // uiStateStore function
 		goto(href);
 	}
 </script>
 
 <div class="flex flex-col h-screen bg-gray-100">
-	<header class="bg-slate-800 text-white shadow-lg z-50">
+	<header class="bg-slate-800 text-white shadow-lg z-50 shrink-0">
 		<div class="container mx-auto px-4">
 			<div class="flex items-center justify-between h-16">
 				<a href="/dashboard" class="text-2xl font-bold hover:text-slate-300 transition-colors"
-					on:click|preventDefault={() => handleWorkspaceChange('dashboard')}>Planning Assistant</a
+					on:click|preventDefault={() => handleWorkspaceNavigation('dashboard')}>Planning Assistant</a
 				>
 				<nav class="flex items-center space-x-4">
 					<button
-						class="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-700 transition-colors {$activeWorkspace === 'dashboard' ? 'bg-slate-900' : ''}"
-						on:click={() => handleWorkspaceChange('dashboard')}
+						class:bg-slate-900={$activeWorkspace === 'dashboard'}
+						class="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-700 transition-colors"
+						on:click={() => handleWorkspaceNavigation('dashboard')}
 					>
 						Dashboard
 					</button>
 					{#each workspaces as ws (ws.id)}
 						<button
-							class="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-700 transition-colors {$activeWorkspace === ws.id ? 'bg-slate-900' : ''}"
-							on:click={() => handleWorkspaceChange(ws.id)}
+							class:bg-slate-900={$activeWorkspace === ws.id}
+							class="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-700 transition-colors"
+							on:click={() => handleWorkspaceNavigation(ws.id)}
 						>
 							{ws.label}
 						</button>
 					{/each}
 					<div class="ml-auto">
-						<button class="p-2 rounded-md hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500">
+						<button
+							class="p-2 rounded-md hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500"
+							aria-label="Search site-wide"  title="Search site-wide"       >
 							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
 								<path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-							  </svg>							  
+							  </svg>
 						</button>
 					</div>
 				</nav>
@@ -188,6 +150,9 @@
 		</div>
 	</header>
 
-	<div class="flex-1 overflow-auto">
-		<slot /> </div>
+	<div class="flex-1 min-h-0 flex flex-col">
+		{#key $page.url.pathname}
+			<slot />
+		{/key}
+	</div>
 </div>

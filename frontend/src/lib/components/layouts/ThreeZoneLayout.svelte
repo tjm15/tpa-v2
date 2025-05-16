@@ -2,12 +2,12 @@
 	// Props could be added later for sidebar widths, etc.
 </script>
 
-<div class="flex h-screen overflow-hidden bg-gray-100">
+<div class="flex flex-col md:flex-row h-full flex-1 min-h-0 bg-gray-100">
 	<aside class="w-1/4 min-w-[280px] max-w-[400px] bg-white border-r border-gray-200 overflow-y-auto shadow-lg">
 		<slot name="left-sidebar"></slot>
 	</aside>
 
-	<main class="flex-1 flex flex-col overflow-y-auto">
+	<main class="flex-1 flex flex-col">
 		<slot name="central-panel"></slot>
 	</main>
 

@@ -46,22 +46,24 @@
 		}
 	}
 
-    function duplicateScenario(sourceScenario: Scenario) {
-        const newName = prompt("Enter name for duplicated scenario:", `${sourceScenario.name} (Copy)`);
-        if (newName && sourceScenario) {
-            const newScenario: Scenario = {
-                ...JSON.parse(JSON.stringify(sourceScenario)), // Deep copy
+    function duplicateScenarioHandler(event: MouseEvent, scenario: Scenario) {
+        event.stopPropagation(); // Stop propagation here
+        const newName = prompt("Enter name for duplicated scenario:", `${scenario.name} (Copy)`);
+        if (newName && scenario) {
+            const newScenarioData: Scenario = { // Renamed to avoid conflict with scenario param
+                ...JSON.parse(JSON.stringify(scenario)), // Deep copy
                 id: `scen-${Date.now()}`,
                 name: newName,
                 createdAt: new Date().toISOString(),
-                baselineScenarioId: sourceScenario.id // Link to original for diff later
+                baselineScenarioId: scenario.id // Link to original for diff later
             };
-            allScenariosStore.update(scens => [...scens, newScenario]);
-            selectedScenarioId.set(newScenario.id);
+            allScenariosStore.update(scens => [...scens, newScenarioData]);
+            selectedScenarioId.set(newScenarioData.id);
         }
     }
 
-    function deleteScenario(scenarioId: string, scenarioName: string) {
+    function deleteScenarioHandler(event: MouseEvent, scenarioId: string, scenarioName: string) {
+        event.stopPropagation(); // Stop propagation here
         if (confirm(`Are you sure you want to delete scenario: "${scenarioName}"?`)) {
             allScenariosStore.update(scens => scens.filter(s => s.id !== scenarioId));
             if (get(selectedScenarioId) === scenarioId) {
@@ -106,8 +108,12 @@
 							<div class="flex justify-between items-center">
                                 <h3 class="text-sm font-semibold text-teal-600 truncate" title={scenario.name}>{scenario.name}</h3>
                                 <div class="flex-shrink-0 space-x-1">
-                                    <Button size="sm" variant="ghost" on:click|stopPropagation={() => duplicateScenario(scenario)} title="Duplicate Scenario">📋</Button>
-                                    <Button size="sm" variant="ghost" on:click|stopPropagation={() => deleteScenario(scenario.id, scenario.name)} title="Delete Scenario" additionalClasses="text-red-500 hover:text-red-700">🗑️</Button>
+									<Button size="sm" variant="ghost" on:click={(event) => duplicateScenarioHandler(event, scenario)} additionalClasses="group">
+										<span title="Duplicate Scenario">📋</span>
+									</Button>
+									<Button size="sm" variant="ghost" on:click={(event) => deleteScenarioHandler(event, scenario.id, scenario.name)} additionalClasses="text-red-500 hover:text-red-700">
+										<span title="Delete Scenario">🗑️</span>
+									</Button>
                                 </div>
                             </div>
                             {#if scenario.description}
