@@ -2,7 +2,7 @@
 	import { sites as allSitesStore, constraints as allConstraintsStore } from '$lib/stores/mainDataStore';
 	import { selectedPlanSiteId } from '$lib/stores/uiStateStore';
 	import type { Site, Constraint } from '$types/models';
-	import MapDisplay from '$lib/components/map/MapDisplay.svelte';
+	import MapDisplay from '$lib/components/shared/MapDisplay.svelte';
 	import Card from '$lib/components/common/Card.svelte';
 	import PolicyRequirementsTab from './PolicyRequirementsTab.svelte';
 	import AllocationDraftTab from './AllocationDraftTab.svelte';
