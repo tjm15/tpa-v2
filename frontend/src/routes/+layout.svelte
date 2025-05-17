@@ -102,7 +102,7 @@
 		<div class="container mx-auto px-4">
 			<div class="flex items-center justify-between h-16">
 				<a href="/dashboard" class="text-2xl font-bold hover:text-slate-300 transition-colors"
-					on:click|preventDefault={() => handleWorkspaceNavigation('dashboard')}>Planning Assistant</a
+					on:click|preventDefault={() => handleWorkspaceNavigation('dashboard')}>The Planner's Assistant</a
 				>
 				<nav class="flex items-center space-x-4">
 					<button
