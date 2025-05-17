@@ -1,0 +1,9 @@
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0
+pydantic>=2.0.0
+python-dotenv>=0.20.0
+# Add other dependencies as needed, e.g.:
+# sqlalchemy
+# psycopg2-binary (for PostgreSQL)
+# passlib[bcrypt] (for password hashing)
+# python-jose[cryptography] (for JWTs)
