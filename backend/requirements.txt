@@ -1,9 +1,40 @@
-fastapi>=0.100.0
-uvicorn[standard]>=0.20.0
-pydantic>=2.0.0
-python-dotenv>=0.20.0
-# Add other dependencies as needed, e.g.:
-# sqlalchemy
-# psycopg2-binary (for PostgreSQL)
-# passlib[bcrypt] (for password hashing)
-# python-jose[cryptography] (for JWTs)
+fastapi
+uvicorn[standard]
+
+# Data validation
+pydantic
+pydantic-settings
+
+# Async PostgreSQL and ORM
+asyncpg
+alembic
+sqlalchemy
+sqlmodel  # optional hybrid of SQLAlchemy + Pydantic
+
+# Spatial / GIS
+geojson
+shapely
+geoalchemy2
+
+# AI + async requests
+openai  # or replace with your preferred model client
+httpx
+
+# Task queues for background AI work
+celery
+redis
+
+# Multipart form handling (e.g. for uploads)
+python-multipart
+
+# Env config
+python-dotenv
+
+# Dev tools
+black
+isort
+mypy
+ruff
+
+# Optional: for generating Pydantic models from OpenAPI
+datamodel-code-generator

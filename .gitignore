@@ -1,0 +1,79 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pyd
+*.pyo
+*.pdb
+*.egg-info/
+.eggs/
+*.egg
+*.log
+
+# Virtual environments
+venv/
+.env/
+.venv/
+ENV/
+env/
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# VSCode
+.vscode/
+.history/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Alembic
+backend/alembic/versions/
+
+# Docker
+*.pid
+*.pid.lock
+
+# Node
+node_modules/
+frontend/node_modules/
+
+# Build output
+frontend/dist/
+frontend/.svelte-kit/
+frontend/.turbo/
+
+# Svelte/TypeScript
+*.tsbuildinfo
+
+# Logs
+*.log
+
+# Misc
+*.sqlite3
+*.db
+*.bak
+*.swp
+*.swo
+
+# Test output
+htmlcov/
+.coverage
+.tox/
+.pytest_cache/
+
+# Local env files
+backend/.env
+frontend/.env
+.env
+
+# Static build artifacts
+frontend/static/
+
+# Ignore lock files if not needed
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
