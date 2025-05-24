@@ -1,6 +1,6 @@
 import uuid
 from sqlalchemy import Column, String, Float, Text, Enum
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
 from app.db_models.base import Base
 from app.models.shared import GoalStatus, GoalType
 
@@ -20,3 +20,6 @@ class Goal(Base):
     type = Column(Enum(GoalType), nullable=False)
     risks = Column(JSONB, nullable=True)
     notes = Column(Text, nullable=True)
+    contributing_policy_ids = Column(ARRAY(String), nullable=True)
+    contributing_site_ids = Column(ARRAY(String), nullable=True)
+    related_goal_ids = Column(ARRAY(String), nullable=True)

@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import Column, String, Text, Enum, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
+from sqlalchemy.dialects.postgresql import UUID, ARRAY, JSON
 from app.db_models.base import Base
 from app.models.shared import PolicyStatus, PolicyType
 
@@ -28,3 +28,7 @@ class Policy(Base):
         ForeignKey("plan_documents.id", ondelete="CASCADE"),
         nullable=False,
     )
+    requirements_summary = Column(String, nullable=True)
+    linked_policies = Column(JSON, nullable=True)  # List of {policyId, policyReference, relationship, summary}
+    strategic_goal_alignments = Column(JSON, nullable=True)  # List of {goalId, goalName, alignment, notes}
+    ai_guidance = Column(JSON, nullable=True)  # List of {type, message, source}

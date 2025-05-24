@@ -22,3 +22,4 @@ class Scenario(Base):
     ai_commentary = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     last_modified = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    # All relevant fields for frontend parity are present as JSON or appropriate types.

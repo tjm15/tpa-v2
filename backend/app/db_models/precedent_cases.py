@@ -26,4 +26,6 @@ class PrecedentCase(Base):
     relevance_summary = Column(Text, nullable=True)
     similarity_criteria = Column(JSON, nullable=True)  # {site, policyOverlap}
 
+    # All relevant fields for frontend parity are present as JSON or appropriate types.
+
     application = relationship("PlanningApplication", back_populates="precedents")

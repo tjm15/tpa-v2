@@ -30,6 +30,7 @@ class PlanningApplication(Base):
     relevant_policies = Column(JSON, nullable=True)
     reasoning_steps = Column(JSON, nullable=True)
     trade_off_analysis = Column(JSON, nullable=True)
+    linked_precedents = Column(JSON, nullable=True)
 
     # relationships
     officer_report = relationship("OfficerReport", back_populates="application")

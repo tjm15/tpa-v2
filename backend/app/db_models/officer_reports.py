@@ -23,3 +23,5 @@ class OfficerReport(Base):
     status = Column(String, nullable=False)
 
     application = relationship("PlanningApplication", back_populates="officer_report")
+
+    # All relevant fields for frontend parity are present as JSON or appropriate types.
