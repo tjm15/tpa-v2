@@ -15,6 +15,7 @@ sqlmodel  # optional hybrid of SQLAlchemy + Pydantic
 geojson
 shapely
 geoalchemy2
+pgvector  # For vector embeddings support
 
 # AI + async requests
 openai  # or replace with your preferred model client

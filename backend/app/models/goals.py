@@ -1,21 +1,17 @@
-from typing import List, Optional
+from typing import Optional, List
+from datetime import datetime
 from pydantic import BaseModel
-from app.models.shared import GoalStatus, GoalType
 
 class Goal(BaseModel):
     id: str
     name: str
-    category: str
+    category: Optional[List[str]] = None  # Changed to array
     description: Optional[str] = None
-    targetMetric: str
+    targetMetric: Optional[str] = None
     targetValue: Optional[float] = None
     currentValue: Optional[float] = None
     unit: Optional[str] = None
     source: Optional[str] = None
-    status: GoalStatus
-    type: GoalType
-    contributingPolicyIds: Optional[List[str]] = None
-    contributingSiteIds: Optional[List[str]] = None
-    relatedGoalIds: Optional[List[str]] = None
-    risks: Optional[List[str]] = None
-    notes: Optional[str] = None
+    status: Optional[List[str]] = None  # Changed to array
+    type: Optional[List[str]] = None  # Changed to array
+    createdAt: datetime

@@ -9,6 +9,16 @@ from .planning_applications import PlanningApplication
 from .officer_reports import OfficerReport
 from .precedent_cases import PrecedentCase
 
+# New models from schema
+from .source_files import SourceFile
+from .text_chunks import ExtractedTextChunk
+from .policy_cross_links import PolicyCrossLink
+from .vectors import PolicyVector, ApplicationVector, PrecedentVector
+from .ai_context import ApplicationAIContext, ApplicationMaterialRef
+from .officer_report_sections import OfficerReportSection
+from .precedent_key_policies import PrecedentKeyPolicy
+from .logging import RetrievalLog, WriteLog, AIEnrichment
+
 __all__ = [
     "Base",
     "Policy",
@@ -21,4 +31,18 @@ __all__ = [
     "PlanningApplication",
     "OfficerReport",
     "PrecedentCase",
+    # New models
+    "SourceFile",
+    "ExtractedTextChunk", 
+    "PolicyCrossLink",
+    "PolicyVector",
+    "ApplicationVector",
+    "PrecedentVector",
+    "ApplicationAIContext",
+    "ApplicationMaterialRef",
+    "OfficerReportSection",
+    "PrecedentKeyPolicy",
+    "RetrievalLog",
+    "WriteLog",
+    "AIEnrichment",
 ]

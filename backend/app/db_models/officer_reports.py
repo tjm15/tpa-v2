@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, String, Text, DateTime, ForeignKey, JSON
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, Text, DateTime, ForeignKey, TIMESTAMP
+from sqlalchemy.dialects.postgresql import UUID, ARRAY, JSONB
 from sqlalchemy.orm import relationship
 from app.db_models.base import Base
 
@@ -13,15 +13,17 @@ class OfficerReport(Base):
         ForeignKey("planning_applications.id", ondelete="CASCADE"),
         primary_key=True,
     )
+    ai_context_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("application_ai_context.application_id"),
+        nullable=True,
+    )
     version = Column(String, nullable=False)
-    sections = Column(JSON, nullable=False)   # list of section dicts
+    status = Column(ARRAY(String), nullable=True)  # dynamic tags
     recommendation = Column(Text, nullable=True)
-    supporting_evidence = Column(JSON, nullable=True)  # list of {name, url_or_id}
-    conflict_summary = Column(Text, nullable=True)
-    compliance_flags = Column(JSON, nullable=True)     # list of {flag, met}
-    last_modified = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    status = Column(String, nullable=False)
+    provenance = Column(JSONB, nullable=True)  # e.g. { retrieval_log_id, write_log_id }
+    created_by = Column(String, nullable=True)
+    last_edited_by = Column(String, nullable=True)
+    last_modified = Column(TIMESTAMP, default=datetime.utcnow)
 
     application = relationship("PlanningApplication", back_populates="officer_report")
-
-    # All relevant fields for frontend parity are present as JSON or appropriate types.

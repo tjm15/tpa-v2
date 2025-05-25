@@ -1,45 +1,21 @@
 from typing import List, Optional
+from datetime import datetime
 from pydantic import BaseModel
-from app.models.shared import (
-    PolicyStatus,
-    PolicyType,
-    RelationshipType,
-)
-
-class PolicyLink(BaseModel):
-    policyId: str
-    policyReference: str
-    relationship: RelationshipType
-    summary: Optional[str] = None
-
-class StrategicGoalAlignment(BaseModel):
-    goalId: str
-    goalName: str
-    alignment: str  # 'Supports' | 'Partially Aligns' | 'Undermines' | 'Neutral'
-    notes: Optional[str] = None
-
-class AIGuidance(BaseModel):
-    type: str
-    message: str
-    source: Optional[str] = None
 
 class Policy(BaseModel):
     id: str
-    reference: str
-    title: str
-    wording: str
-    status: PolicyStatus
-    type: PolicyType
-    version: Optional[str] = None
-    lastModified: Optional[str] = None
-    author: Optional[str] = None
-    authorNotes: Optional[str] = None
-    supportingText: Optional[str] = None
-    internalNotes: Optional[str] = None
-    linkedPolicies: Optional[List[PolicyLink]] = None
-    affectedSiteCategories: Optional[List[str]] = None
-    strategicGoalAlignments: Optional[List[StrategicGoalAlignment]] = None
-    aiGuidance: Optional[List[AIGuidance]] = None
-    documentId: str
-    keywords: Optional[List[str]] = None
-    requirementsSummary: Optional[str] = None
+    policyId: str  # e.g. "H1", "DM3" 
+    policyTitle: str
+    tags: Optional[List[str]] = None  # e.g. ["strategic","SPD"]
+    summary: str
+    crossReferences: Optional[List[str]] = None  # codes of other policies
+    geographicMentions: Optional[List[str]] = None
+    documentId: Optional[str] = None
+    lpaCode: Optional[str] = None
+    createdAt: datetime
+
+class PolicyCrossLink(BaseModel):
+    sourcePolicyCode: str  # original code
+    targetPolicyCode: str
+    sourcePolicyId: Optional[str] = None
+    targetPolicyId: Optional[str] = None

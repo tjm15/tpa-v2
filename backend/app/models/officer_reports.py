@@ -1,27 +1,24 @@
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
+from datetime import datetime
 from pydantic import BaseModel
 
 class OfficerReportSection(BaseModel):
-    id: str
+    applicationId: str
+    sectionId: str
+    parentSectionId: Optional[str] = None
     title: str
     content: str
-    order: int
-
-class EvidenceLink(BaseModel):
-    name: str
-    url_or_id: str
-
-class ComplianceFlag(BaseModel):
-    flag: str
-    met: bool
+    orderNo: int
+    agentStage: Optional[str] = None  # tag for generation pass
+    createdAt: datetime
 
 class OfficerReport(BaseModel):
     applicationId: str
+    aiContextId: Optional[str] = None
     version: str
-    sections: List[OfficerReportSection]
+    status: Optional[List[str]] = None  # dynamic tags
     recommendation: Optional[str] = None
-    supportingEvidenceLinks: Optional[List[EvidenceLink]] = None
-    conflictSummary: Optional[str] = None
-    complianceFlags: Optional[List[ComplianceFlag]] = None
-    lastModified: str
-    status: str  # 'Draft' | 'Review' | 'Final'
+    provenance: Optional[Dict[str, Any]] = None  # e.g. { retrieval_log_id, write_log_id }
+    createdBy: Optional[str] = None
+    lastEditedBy: Optional[str] = None
+    lastModified: datetime

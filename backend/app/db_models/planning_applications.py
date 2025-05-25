@@ -1,36 +1,30 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, String, Text, DateTime, ForeignKey, JSON, Enum
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, Text, DateTime, ForeignKey, Date, TIMESTAMP
+from sqlalchemy.dialects.postgresql import UUID, ARRAY, JSONB
 from sqlalchemy.orm import relationship
 from app.db_models.base import Base
-from app.models.shared import ApplicationType, ApplicationStatus
 
 class PlanningApplication(Base):
     __tablename__ = "planning_applications"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     reference_number = Column(String, nullable=False)
-    address = Column(String, nullable=False)
-    site_id = Column(UUID(as_uuid=True), ForeignKey("sites.id"), nullable=True)
-    site_description = Column(Text, nullable=True)
+    site_id = Column(
+        UUID(as_uuid=True), 
+        ForeignKey("sites.id", ondelete="SET NULL"), 
+        nullable=True
+    )
+    status = Column(ARRAY(String), nullable=True)  # dynamic tags, not rigid enum
     proposal_details = Column(Text, nullable=False)
-    application_type = Column(Enum(ApplicationType), nullable=False)
-    status = Column(Enum(ApplicationStatus), nullable=False)
-    received_date = Column(DateTime, nullable=False)
-    validated_date = Column(DateTime, nullable=True)
-    decision_date = Column(DateTime, nullable=True)
-    decision = Column(String, nullable=True)
+    received_date = Column(Date, nullable=False)
+    decision_date = Column(Date, nullable=True)
     applicant_name = Column(String, nullable=True)
     agent_name = Column(String, nullable=True)
     case_officer = Column(String, nullable=True)
-
-    # optionally store DM-specific arrays as JSON
-    constraints = Column(JSON, nullable=True)
-    relevant_policies = Column(JSON, nullable=True)
-    reasoning_steps = Column(JSON, nullable=True)
-    trade_off_analysis = Column(JSON, nullable=True)
-    linked_precedents = Column(JSON, nullable=True)
+    planner_weightings = Column(JSONB, nullable=True)  # UI-fed overrides
+    lpa_code = Column(String, nullable=True)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow)
 
     # relationships
     officer_report = relationship("OfficerReport", back_populates="application")
