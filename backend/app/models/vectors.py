@@ -5,7 +5,7 @@ from pydantic import BaseModel
 class PolicyVector(BaseModel):
     id: str
     sourceChunkId: str
-    embedding: Optional[str] = None  # Will store as string until pgvector is fully integrated
+    embedding: Optional[List[float]] = None  # pgvector: list of floats
     policyRef: Optional[str] = None
     keyThemes: Optional[List[str]] = None
     crossReferences: Optional[List[str]] = None
@@ -18,7 +18,7 @@ class ApplicationVector(BaseModel):
     id: str
     sourceChunkId: str
     applicationId: Optional[str] = None
-    embedding: Optional[str] = None  # Will store as string until pgvector is fully integrated
+    embedding: Optional[List[float]] = None  # pgvector: list of floats
     documentType: Optional[str] = None
     sectionTitle: Optional[str] = None
     tokens: Optional[int] = None
@@ -28,7 +28,7 @@ class ApplicationVector(BaseModel):
 class PrecedentVector(BaseModel):
     id: str
     sourceCaseId: Optional[str] = None
-    embedding: Optional[str] = None  # Will store as string until pgvector is fully integrated
+    embedding: Optional[List[float]] = None  # pgvector: list of floats
     summary: Optional[str] = None
     keyPolicies: Optional[List[str]] = None
     siteContext: Optional[str] = None
