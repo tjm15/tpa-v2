@@ -47,6 +47,9 @@ def promote_policies(
     lpa_code: str
 ):
     now = datetime.datetime.utcnow()
+    cross_links_created = 0
+    cross_links_skipped = 0
+    
     for item in enrichments:
         pol = (
             session.query(Policy)
@@ -74,12 +77,31 @@ def promote_policies(
             pol.geographic_mentions = item.get('geographic_mentions', [])
         session.add(pol)
 
-        # cross-links
+        # cross-links - build knowledge graph
         for code in item.get('cross_references', []):
-            link = PolicyCrossLink(
-                source_policy_code=item['policy_id'],
-                target_policy_code=code,
-                source_policy_id=pol.id
+            # Check if this cross-link already exists
+            existing_link = (
+                session.query(PolicyCrossLink)
+                .filter(
+                    PolicyCrossLink.source_policy_code == item['policy_id'],
+                    PolicyCrossLink.target_policy_code == code
+                )
+                .first()
             )
-            session.add(link)
+            
+            if not existing_link:
+                link = PolicyCrossLink(
+                    source_policy_code=item['policy_id'],
+                    target_policy_code=code,
+                    source_policy_id=pol.id
+                )
+                session.add(link)
+                cross_links_created += 1
+            else:
+                cross_links_skipped += 1
+    
     session.flush()
+    
+    # Log knowledge graph statistics
+    if cross_links_created > 0 or cross_links_skipped > 0:
+        print(f"Knowledge graph update: {cross_links_created} cross-links created, {cross_links_skipped} already existed")

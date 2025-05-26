@@ -7,3 +7,9 @@ python-dotenv
 pgvector
 pypdf
 # If you use asyncpg, alembic, or other backend tools, add as needed
+
+# Visualization dependencies for knowledge graph
+networkx>=3.0
+matplotlib>=3.5.0
+plotly>=5.0.0
+psycopg2-binary>=2.9.0
