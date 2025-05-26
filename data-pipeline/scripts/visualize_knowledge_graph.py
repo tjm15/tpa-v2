@@ -383,7 +383,7 @@ def export_graph_data(policies, cross_links, output_file):
             }
             for policy_id, policy_data in policies.items()
         ],
-        'edges': [
+        'links': [
             {
                 'source': source,
                 'target': target
