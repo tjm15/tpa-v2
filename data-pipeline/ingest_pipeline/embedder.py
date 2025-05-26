@@ -22,25 +22,23 @@ def generate_embeddings(chunks: list) -> list[dict]:
     now = datetime.datetime.utcnow()
     records = []
 
-    # Process in batches
-    for i in range(0, len(texts), BATCH_SIZE):
-        batch_texts = texts[i : i + BATCH_SIZE]
-        resp = client.text_embedding(model=MODEL, inputs=batch_texts)
-
-        # Pair back with the original chunk dicts
-        for c, emb in zip(chunks[i : i + BATCH_SIZE], resp.embeddings):
-            records.append({
-                "source_chunk_id": c["id"],
-                # HF returns a list of floats; stringify for pgvector(TEXT) column
-                "embedding": str(emb),
-                "policy_ref": None,
-                "key_themes": [],
-                "cross_references": [],
-                "geographic_mentions": [],
-                "tokens": len(c["chunk_text"].split()),
-                "model_version": MODEL,
-                "created_at": now
-            })
+    # Process each text individually (safer with current API)
+    for c in chunks:
+        text = c["chunk_text"]
+        emb = client.feature_extraction(model=MODEL, text=text)
+        
+        records.append({
+            "source_chunk_id": c["id"],
+            # Store as list of floats for pgvector
+            "embedding": emb,
+            "policy_ref": None,
+            "key_themes": [],
+            "cross_references": [],
+            "geographic_mentions": [],
+            "tokens": len(text.split()),
+            "model_version": MODEL,
+            "created_at": now
+        })
 
     return records
 

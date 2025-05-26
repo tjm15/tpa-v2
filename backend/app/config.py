@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     database_name: str = "tpa"
 
     # AI / Graph / Vector
-    vector_dim: int = 768
+    vector_dim: int = 1024  # BGE-large-en-v1.5 produces 1024-dimensional vectors
     graph_name: str = "default_graph"
 
     # FastAPI runtime

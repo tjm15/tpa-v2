@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS policy_cross_links (
 CREATE TABLE IF NOT EXISTS policy_vectors (
   id                  UUID      PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_chunk_id     UUID      NOT NULL REFERENCES extracted_text_chunks(id) ON DELETE CASCADE,
-  embedding           vector(768),
+  embedding           vector(1024),
   policy_ref          TEXT,      -- e.g. "H1"
   key_themes          TEXT[],
   cross_references    TEXT[],
@@ -167,7 +167,7 @@ CREATE TABLE IF NOT EXISTS application_vectors (
   id              UUID      PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_chunk_id UUID      NOT NULL REFERENCES extracted_text_chunks(id) ON DELETE CASCADE,
   application_id  UUID      REFERENCES planning_applications(id) ON DELETE SET NULL,
-  embedding       vector(768),
+  embedding       vector(1024),
   document_type   TEXT,
   section_title   TEXT,
   tokens          INTEGER,
@@ -181,7 +181,7 @@ CREATE INDEX IF NOT EXISTS idx_application_vectors_embedding
 CREATE TABLE IF NOT EXISTS precedent_vectors (
   id             UUID      PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_case_id UUID      REFERENCES precedent_cases(id) ON DELETE CASCADE,
-  embedding      vector(768),
+  embedding      vector(1024),
   summary        TEXT,
   key_policies   TEXT[],
   site_context   TEXT,

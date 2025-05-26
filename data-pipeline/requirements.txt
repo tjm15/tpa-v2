@@ -4,4 +4,5 @@ geoalchemy2
 shapely
 huggingface_hub
 python-dotenv
+pgvector
 # If you use asyncpg, alembic, or other backend tools, add as needed

@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy import Column, String, Text, Integer, ForeignKey, TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.orm import relationship
+from pgvector.sqlalchemy import Vector
 from app.db_models.base import Base
 
 class PolicyVector(Base):
@@ -14,7 +15,7 @@ class PolicyVector(Base):
         ForeignKey("extracted_text_chunks.id", ondelete="CASCADE"),
         nullable=False,
     )
-    embedding = Column(Text, nullable=True)  # Will be vector(768) when pgvector is available
+    embedding = Column(Vector(1024), nullable=True)  # BGE-large-en-v1.5 produces 1024-dimensional vectors
     policy_ref = Column(String, nullable=True)  # e.g. "H1"
     key_themes = Column(ARRAY(String), nullable=True)
     cross_references = Column(ARRAY(String), nullable=True)
@@ -40,7 +41,7 @@ class ApplicationVector(Base):
         ForeignKey("planning_applications.id", ondelete="SET NULL"),
         nullable=True,
     )
-    embedding = Column(Text, nullable=True)  # Will be vector(768) when pgvector is available
+    embedding = Column(Vector(1024), nullable=True)  # BGE-large-en-v1.5 produces 1024-dimensional vectors
     document_type = Column(String, nullable=True)
     section_title = Column(String, nullable=True)
     tokens = Column(Integer, nullable=True)
@@ -59,7 +60,7 @@ class PrecedentVector(Base):
         ForeignKey("precedent_cases.id", ondelete="CASCADE"),
         nullable=True,
     )
-    embedding = Column(Text, nullable=True)  # Will be vector(768) when pgvector is available
+    embedding = Column(Vector(1024), nullable=True)  # BGE-large-en-v1.5 produces 1024-dimensional vectors
     summary = Column(Text, nullable=True)
     key_policies = Column(ARRAY(String), nullable=True)
     site_context = Column(String, nullable=True)

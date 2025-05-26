@@ -10,12 +10,13 @@ from datetime import datetime
 from sqlalchemy import Column, String, Text, Integer, ForeignKey, TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.orm import relationship
+from pgvector.sqlalchemy import Vector
 
 class PolicyVector(Base):
     __tablename__ = "policy_vectors"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     source_chunk_id = Column(UUID(as_uuid=True), ForeignKey("extracted_text_chunks.id", ondelete="CASCADE"), nullable=False)
-    embedding = Column(Text, nullable=True)
+    embedding = Column(Vector(1024), nullable=True)  # BGE-large-en-v1.5 produces 1024-dimensional vectors
     policy_ref = Column(String, nullable=True)
     key_themes = Column(ARRAY(String), nullable=True)
     cross_references = Column(ARRAY(String), nullable=True)
@@ -30,7 +31,7 @@ class ApplicationVector(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     source_chunk_id = Column(UUID(as_uuid=True), ForeignKey("extracted_text_chunks.id", ondelete="CASCADE"), nullable=False)
     application_id = Column(UUID(as_uuid=True), ForeignKey("planning_applications.id", ondelete="SET NULL"), nullable=True)
-    embedding = Column(Text, nullable=True)
+    embedding = Column(Vector(1024), nullable=True)
     document_type = Column(String, nullable=True)
     section_title = Column(String, nullable=True)
     tokens = Column(Integer, nullable=True)
@@ -42,7 +43,7 @@ class PrecedentVector(Base):
     __tablename__ = "precedent_vectors"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     source_case_id = Column(UUID(as_uuid=True), ForeignKey("precedent_cases.id", ondelete="CASCADE"), nullable=True)
-    embedding = Column(Text, nullable=True)
+    embedding = Column(Vector(1024), nullable=True)
     summary = Column(Text, nullable=True)
     key_policies = Column(ARRAY(String), nullable=True)
     site_context = Column(String, nullable=True)
