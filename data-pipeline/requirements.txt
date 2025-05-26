@@ -1,0 +1,7 @@
+sqlalchemy
+psycopg2-binary
+geoalchemy2
+shapely
+huggingface_hub
+python-dotenv
+# If you use asyncpg, alembic, or other backend tools, add as needed

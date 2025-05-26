@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 class Policy(BaseModel):
     id: str
-    policyId: str  # e.g. "H1", "DM3" 
+    policyId: Optional[str] = None  # e.g. "H1", "DM3", now optional
     policyTitle: str
     tags: Optional[List[str]] = None  # e.g. ["strategic","SPD"]
     summary: str
@@ -12,7 +12,7 @@ class Policy(BaseModel):
     geographicMentions: Optional[List[str]] = None
     documentId: Optional[str] = None
     lpaCode: Optional[str] = None
-    createdAt: datetime
+    createdAt: Optional[datetime] = None
 
 class PolicyCrossLink(BaseModel):
     sourcePolicyCode: str  # original code

@@ -9,7 +9,7 @@ class Policy(Base):
     __tablename__ = "policies"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    policy_id = Column(String, nullable=False)  # e.g. "H1", "DM3"
+    policy_id = Column(String, nullable=True)  # Now nullable
     policy_title = Column(String, nullable=False)
     tags = Column(ARRAY(String), nullable=True)  # e.g. ["strategic","SPD"]
     summary = Column(Text, nullable=False)

@@ -121,7 +121,7 @@ CREATE TABLE IF NOT EXISTS goals (
 -- 5.1 Policies (AI-extracted metadata)
 CREATE TABLE IF NOT EXISTS policies (
   id                  UUID      PRIMARY KEY DEFAULT uuid_generate_v4(),
-  policy_id           TEXT      NOT NULL,        -- e.g. "H1", "DM3"
+  policy_id           TEXT,        -- e.g. "H1", "DM3" (now nullable)
   policy_title        TEXT      NOT NULL,
   tags                TEXT[],                      -- e.g. ["strategic","SPD"]
   summary             TEXT      NOT NULL,
