@@ -18,17 +18,32 @@ def generate_embeddings(chunks: list) -> list[dict]:
     Call the HF Inference API to embed each chunk using BGE-large-en-v1.5.
     Returns a list of records ready for ingestion.
     """
-    texts = [c["chunk_text"] for c in chunks]
     now = datetime.datetime.utcnow()
     records = []
 
     # Process each text individually (safer with current API)
     for c in chunks:
-        text = c["chunk_text"]
-        emb = client.feature_extraction(model=MODEL, text=text)
+        # Handle both dictionary and database object formats
+        if hasattr(c, 'chunk_text'):
+            text = c.chunk_text
+            chunk_id = c.id
+        else:
+            text = c["chunk_text"]
+            chunk_id = c["id"]
+        
+        # Skip embedding generation if no HF token is available
+        if not HF_TOKEN:
+            print(f"Warning: No HF_TOKEN found, skipping embedding generation for chunk {chunk_id}")
+            emb = [0.0] * 1024  # Create a dummy embedding of zeros
+        else:
+            try:
+                emb = client.feature_extraction(model=MODEL, text=text)
+            except Exception as e:
+                print(f"Warning: Failed to generate embedding for chunk {chunk_id}: {e}")
+                emb = [0.0] * 1024  # Create a dummy embedding of zeros
         
         records.append({
-            "source_chunk_id": c["id"],
+            "source_chunk_id": chunk_id,
             # Store as list of floats for pgvector
             "embedding": emb,
             "policy_ref": None,

@@ -41,6 +41,7 @@ def ingest_document(
         session.flush()
 
         chunks = chunk_text(pdf_path, nodes)
+        db_chunks = []
         for c in chunks:
             chunk = ExtractedTextChunk(
                 id=c['id'],
@@ -50,15 +51,16 @@ def ingest_document(
                 chunk_text=c['chunk_text']
             )
             session.add(chunk)
+            db_chunks.append(chunk)
         session.flush()
 
         enrichments = load_enrichments(enrichment_json_path)
-        ingest_enrichments(session, enrichments, chunks, plan, lpa_code)
+        ingest_enrichments(session, enrichments, db_chunks, plan, lpa_code)
         promote_policies(session, enrichments, plan, lpa_code)
 
         map_constraints(session, enrichments, plan)
 
-        embeddings = generate_embeddings(chunks)
+        embeddings = generate_embeddings(db_chunks)
         ingest_vectors(session, embeddings)
 
         write_logs(session, plan.id, enrichments, embeddings)

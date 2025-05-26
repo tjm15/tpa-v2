@@ -16,13 +16,18 @@ def ingest_enrichments(
         best = None
         best_score = 0.0
         for c in chunks:
-            if c['page_number'] != item.get('page_number'):
+            if c.page_number != item.get('page_number'):
                 continue
-            snippet = c['chunk_text'][: len(item.get('summary', ''))]
+            snippet = c.chunk_text[: len(item.get('summary', ''))]
             score = SequenceMatcher(None, item.get('summary', ''), snippet).ratio()
             if score > best_score:
                 best_score, best = score, c
-        target_id = best['id'] if best else None
+        
+        if best is None:
+            print(f"Warning: No matching chunk found for enrichment policy_id {item.get('policy_id', 'unknown')} on page {item.get('page_number', 'unknown')}")
+            continue  # Skip this enrichment instead of creating with null target_id
+            
+        target_id = best.id
         enrich = AIEnrichment(
             target_table='extracted_text_chunks',
             target_id=target_id,
