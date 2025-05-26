@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 
 # TODO: update with your real database URL
-database_url = "postgresql://user:password@localhost:5432/yourdb"
+database_url = "postgresql://tpa:tpa@localhost:5432/tpa"
 
 _engine = create_engine(database_url)
 SessionLocal = sessionmaker(bind=_engine)

@@ -5,4 +5,5 @@ shapely
 huggingface_hub
 python-dotenv
 pgvector
+pypdf
 # If you use asyncpg, alembic, or other backend tools, add as needed

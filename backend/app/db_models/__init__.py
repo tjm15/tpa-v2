@@ -1,7 +1,7 @@
 from .base import Base
 from .policies import Policy
 from .sites import Site
-from .constraints import Constraint
+from .constraints import Constraint, DerivedGeographicConstraint
 from .plan_documents import PlanDocument, DocumentNode
 from .scenarios import Scenario
 from .goals import Goal

@@ -77,6 +77,15 @@ CREATE TABLE IF NOT EXISTS constraints (
   created_at       TIMESTAMP   DEFAULT timezone('utc', now())
 );
 
+-- 3.1.1 Derived geographic constraints (AI-extracted geographic mentions)
+CREATE TABLE IF NOT EXISTS derived_geographic_constraints (
+  id            UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
+  place_name    TEXT        NOT NULL,
+  constraint_id UUID        NOT NULL REFERENCES constraints(id) ON DELETE CASCADE,
+  confidence    NUMERIC,
+  created_at    TIMESTAMP   DEFAULT timezone('utc', now())
+);
+
 -- 3.2 Sites
 CREATE TABLE IF NOT EXISTS sites (
   id                       UUID      PRIMARY KEY DEFAULT uuid_generate_v4(),

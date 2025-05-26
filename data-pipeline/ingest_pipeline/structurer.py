@@ -1,5 +1,5 @@
 from uuid import uuid4
-from PyPDF2 import PdfReader
+from pypdf import PdfReader
 
 
 def extract_nodes(pdf_path: str):
