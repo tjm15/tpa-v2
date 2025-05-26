@@ -146,8 +146,8 @@ CREATE TABLE IF NOT EXISTS policies (
 CREATE TABLE IF NOT EXISTS policy_cross_links (
   source_policy_code TEXT    NOT NULL,  -- original code
   target_policy_code TEXT    NOT NULL,
-  source_policy_id   UUID    REFERENCES policies(id) ON DELETE SET NULL,
-  target_policy_id   UUID    REFERENCES policies(id) ON DELETE SET NULL,
+  source_policy_id   UUID    REFERENCES policies(id) ON DELETE CASCADE,
+  target_policy_id   UUID    REFERENCES policies(id) ON DELETE CASCADE,
   PRIMARY KEY(source_policy_code, target_policy_code)
 );
 
