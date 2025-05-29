@@ -121,6 +121,38 @@ def revert(lpa_code: str, name: str, filename: str):
                     .delete(synchronize_session=False)
                 print(f"   Deleted {chunk_enrichment_count} chunk enrichments")
 
+            # Delete AI enrichments for the plan document itself
+            doc_enrichment_count = session.query(AIEnrichment) \
+                .filter(
+                    AIEnrichment.target_table=='plan_documents',
+                    AIEnrichment.target_id==pd.id
+                ) \
+                .count()
+            if doc_enrichment_count > 0:
+                session.query(AIEnrichment) \
+                    .filter(
+                        AIEnrichment.target_table=='plan_documents',
+                        AIEnrichment.target_id==pd.id
+                    ) \
+                    .delete(synchronize_session=False)
+                print(f"   Deleted {doc_enrichment_count} plan document enrichments")
+
+            # Delete AI enrichments for the source file
+            file_enrichment_count = session.query(AIEnrichment) \
+                .filter(
+                    AIEnrichment.target_table=='source_files',
+                    AIEnrichment.target_id==sf.id
+                ) \
+                .count()
+            if file_enrichment_count > 0:
+                session.query(AIEnrichment) \
+                    .filter(
+                        AIEnrichment.target_table=='source_files',
+                        AIEnrichment.target_id==sf.id
+                    ) \
+                    .delete(synchronize_session=False)
+                print(f"   Deleted {file_enrichment_count} source file enrichments")
+
             # 4. Delete policies + cross-links for this plan_document
             print("🗑️  Deleting policies and cross-links...")
             policy_ids = [
@@ -179,6 +211,22 @@ def revert(lpa_code: str, name: str, filename: str):
             print(f"   Found {len(const_ids)} constraints")
             
             if const_ids:
+                # Delete AI enrichments for constraints
+                constraint_enrichment_count = session.query(AIEnrichment) \
+                    .filter(
+                        AIEnrichment.target_table=='constraints',
+                        AIEnrichment.target_id.in_(const_ids)
+                    ) \
+                    .count()
+                if constraint_enrichment_count > 0:
+                    session.query(AIEnrichment) \
+                        .filter(
+                            AIEnrichment.target_table=='constraints',
+                            AIEnrichment.target_id.in_(const_ids)
+                        ) \
+                        .delete(synchronize_session=False)
+                    print(f"   Deleted {constraint_enrichment_count} constraint enrichments")
+
                 derived_count = session.query(DerivedGeographicConstraint) \
                     .filter(DerivedGeographicConstraint.constraint_id.in_(const_ids)) \
                     .count()
@@ -194,6 +242,29 @@ def revert(lpa_code: str, name: str, filename: str):
 
             # 6. Delete document nodes & text chunks
             print("🗑️  Deleting document nodes and text chunks...")
+            node_ids = [
+                n.id for n in session.query(DocumentNode.id)
+                            .filter(DocumentNode.document_id==pd.id)
+            ]
+            print(f"   Found {len(node_ids)} document nodes")
+            
+            if node_ids:
+                # Delete AI enrichments for document nodes
+                node_enrichment_count = session.query(AIEnrichment) \
+                    .filter(
+                        AIEnrichment.target_table=='document_nodes',
+                        AIEnrichment.target_id.in_(node_ids)
+                    ) \
+                    .count()
+                if node_enrichment_count > 0:
+                    session.query(AIEnrichment) \
+                        .filter(
+                            AIEnrichment.target_table=='document_nodes',
+                            AIEnrichment.target_id.in_(node_ids)
+                        ) \
+                        .delete(synchronize_session=False)
+                    print(f"   Deleted {node_enrichment_count} document node enrichments")
+
             node_count = session.query(DocumentNode) \
                 .filter(DocumentNode.document_id==pd.id) \
                 .count()
@@ -224,9 +295,63 @@ def revert(lpa_code: str, name: str, filename: str):
         traceback.print_exc()
         raise
 
+def cleanup_global_orphans():
+    """Clean up orphaned records that may be left behind across the entire database"""
+    try:
+        with get_session() as session:
+            print("\n🧹 Performing global orphaned data cleanup...")
+            
+            # Check if database is empty of main entities
+            plan_doc_count = session.query(PlanDocument).count()
+            source_file_count = session.query(SourceFile).count()
+            policy_count = session.query(Policy).count()
+            
+            if plan_doc_count == 0 and source_file_count == 0 and policy_count == 0:
+                print("   Main entities are empty - cleaning up orphaned references...")
+                
+                # Clean up orphaned derived constraints first (foreign key dependency)
+                derived_count = session.query(DerivedGeographicConstraint).count()
+                if derived_count > 0:
+                    session.query(DerivedGeographicConstraint).delete(synchronize_session=False)
+                    print(f"   Deleted {derived_count} orphaned derived geographic constraints")
+                
+                # Clean up orphaned constraints
+                constraint_count = session.query(Constraint).count()
+                if constraint_count > 0:
+                    session.query(Constraint).delete(synchronize_session=False)
+                    print(f"   Deleted {constraint_count} orphaned constraints")
+                
+                # Clean up orphaned AI enrichments
+                enrichment_count = session.query(AIEnrichment).count()
+                if enrichment_count > 0:
+                    session.query(AIEnrichment).delete(synchronize_session=False)
+                    print(f"   Deleted {enrichment_count} orphaned AI enrichments")
+                
+                # Clean up any remaining vectors or write logs
+                vector_count = session.query(PolicyVector).count()
+                if vector_count > 0:
+                    session.query(PolicyVector).delete(synchronize_session=False)
+                    print(f"   Deleted {vector_count} orphaned policy vectors")
+                
+                write_log_count = session.query(WriteLog).count()
+                if write_log_count > 0:
+                    session.query(WriteLog).delete(synchronize_session=False)
+                    print(f"   Deleted {write_log_count} orphaned write logs")
+                
+                session.commit()
+                print("   ✅ Global cleanup completed")
+            else:
+                print("   Database still contains main entities - skipping global cleanup")
+                
+    except Exception as e:
+        print(f"   ❌ Error during global cleanup: {e}")
+        import traceback
+        traceback.print_exc()
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Revert a previously injected policy document")
     parser.add_argument("--list", action="store_true", help="List all available documents that can be reverted")
+    parser.add_argument("--cleanup-orphans", action="store_true", help="Clean up orphaned records across the entire database")
     parser.add_argument("--lpa", required=False, help="LPA code used during inject")
     parser.add_argument("--name", required=False, help="Document name used during inject")
     parser.add_argument("--file", required=False, help="PDF filename used during inject")
@@ -234,8 +359,11 @@ if __name__ == "__main__":
     
     if args.list:
         list_documents()
+    elif args.cleanup_orphans:
+        cleanup_global_orphans()
     elif args.lpa and args.name and args.file:
         revert(args.lpa, args.name, args.file)
+        cleanup_global_orphans()
     else:
-        print("Error: Either use --list to see available documents, or provide --lpa, --name, and --file arguments")
+        print("Error: Use --list to see available documents, --cleanup-orphans to clean orphaned data, or provide --lpa, --name, and --file arguments")
         parser.print_help()
