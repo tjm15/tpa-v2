@@ -1,6 +1,8 @@
 import datetime
 from difflib import SequenceMatcher
-from ingest_pipeline.models import AIEnrichment, Policy, PolicyCrossLink
+from libs.shared_db_models.logging import AIEnrichment
+from libs.shared_db_models.policies import Policy
+from libs.shared_db_models.policy_cross_links import PolicyCrossLink
 
 
 def ingest_enrichments(

@@ -1,5 +1,6 @@
 import datetime
-from ingest_pipeline.models import SourceFile, PlanDocument
+from libs.shared_db_models.source_files import SourceFile
+from libs.shared_db_models.plan_documents import PlanDocument
 from ingest_pipeline.utils import hash_file
 
 

@@ -61,7 +61,7 @@ def ingest_vectors(session, vectors: list):
     """
     Insert the embedding records into the policy_vectors table.
     """
-    from ingest_pipeline.models import PolicyVector
+    from libs.shared_db_models.vectors import PolicyVector
 
     for v in vectors:
         pv = PolicyVector(

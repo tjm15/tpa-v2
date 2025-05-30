@@ -8,19 +8,14 @@ from sqlalchemy import or_
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from ingest_pipeline.utils import get_session
-from ingest_pipeline.models import (
-    SourceFile,
-    PlanDocument,
-    DocumentNode,
-    ExtractedTextChunk,
-    AIEnrichment,
-    Policy,
-    PolicyCrossLink,
-    Constraint,
-    DerivedGeographicConstraint,
-    PolicyVector,
-    WriteLog
-)
+from libs.shared_db_models.source_files import SourceFile
+from libs.shared_db_models.plan_documents import PlanDocument, DocumentNode
+from libs.shared_db_models.text_chunks import ExtractedTextChunk
+from libs.shared_db_models.logging import AIEnrichment, WriteLog
+from libs.shared_db_models.policies import Policy
+from libs.shared_db_models.policy_cross_links import PolicyCrossLink
+from libs.shared_db_models.constraints import Constraint, DerivedGeographicConstraint
+from libs.shared_db_models.vectors import PolicyVector
 
 def list_documents():
     """List all available documents that can be reverted"""

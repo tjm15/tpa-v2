@@ -1,5 +1,5 @@
 import datetime
-from ingest_pipeline.models import WriteLog
+from libs.shared_db_models.logging import WriteLog
 
 
 def write_logs(

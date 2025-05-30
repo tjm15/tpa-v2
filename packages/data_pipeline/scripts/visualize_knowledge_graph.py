@@ -41,7 +41,8 @@ def get_database_connection():
     """Get database connection using existing utilities"""
     try:
         from ingest_pipeline.utils import get_session
-        from ingest_pipeline.models import Policy, PolicyCrossLink
+        from libs.shared_db_models.policies import Policy
+        from libs.shared_db_models.policy_cross_links import PolicyCrossLink
         print("Database modules imported successfully")
         return get_session, Policy, PolicyCrossLink
     except Exception as e:

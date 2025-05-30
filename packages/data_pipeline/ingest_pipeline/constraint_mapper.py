@@ -1,5 +1,5 @@
 import datetime
-from ingest_pipeline.models import Constraint, DerivedGeographicConstraint
+from libs.shared_db_models.constraints import Constraint, DerivedGeographicConstraint
 
 
 def map_constraints(

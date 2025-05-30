@@ -8,7 +8,8 @@ from ingest_pipeline.enrich_ingester import ingest_enrichments, promote_policies
 from ingest_pipeline.constraint_mapper import map_constraints
 from ingest_pipeline.embedder import generate_embeddings, ingest_vectors
 from ingest_pipeline.logger import write_logs
-from ingest_pipeline.models import DocumentNode, ExtractedTextChunk
+from libs.shared_db_models.plan_documents import DocumentNode
+from libs.shared_db_models.text_chunks import ExtractedTextChunk
 
 
 def ingest_document(
