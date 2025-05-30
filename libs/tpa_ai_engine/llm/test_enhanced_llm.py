@@ -9,16 +9,32 @@ import os
 import sys
 import time
 from typing import Dict, Any
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Add the parent directory to the path so we can import the LLM modules
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from .enhanced_config import (
-    create_enhanced_llm_client, 
-    validate_llm_configuration,
-    create_monitoring_dashboard_data
-)
-from llm.enhanced_llm_client import logger
+# Fix for running as script or module
+if __name__ == "__main__":
+    import sys
+    import os
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+    from tpa_ai_engine.llm.enhanced_config import (
+        create_enhanced_llm_client, 
+        validate_llm_configuration,
+        create_monitoring_dashboard_data
+    )
+    from tpa_ai_engine.llm.enhanced_llm_client import logger
+else:
+    from .enhanced_config import (
+        create_enhanced_llm_client, 
+        validate_llm_configuration,
+        create_monitoring_dashboard_data
+    )
+    from llm.enhanced_llm_client import logger
 
 
 def print_separator(title: str):

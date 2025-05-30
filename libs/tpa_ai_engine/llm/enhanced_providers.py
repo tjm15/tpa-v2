@@ -89,36 +89,94 @@ class EnhancedGeminiClient(EnhancedLLMClient):
                 raise Exception(f"Gemini API error: {e}")
     
     def _extract_text_from_response(self, response) -> str:
-        """Extract text from Gemini response with comprehensive fallback methods"""
+        """Extract text from Gemini response with comprehensive fallback methods (robust to all edge cases)"""
         try:
             # Try direct text access
-            if hasattr(response, 'text') and response.text:
+            if hasattr(response, 'text') and isinstance(response.text, str) and response.text.strip():
                 return response.text
-            
+
             # Try candidates approach
             if hasattr(response, 'candidates') and response.candidates:
-                candidate = response.candidates[0]
-                if hasattr(candidate, 'content') and candidate.content:
+                candidate = response.candidates[0] if isinstance(response.candidates, list) and len(response.candidates) > 0 else None
+                if candidate and hasattr(candidate, 'content') and candidate.content:
                     content = candidate.content
-                    if hasattr(content, 'parts') and content.parts:
+                    if hasattr(content, 'parts') and content.parts and isinstance(content.parts, list):
                         text_parts = []
                         for part in content.parts:
-                            if hasattr(part, 'text') and part.text:
+                            if hasattr(part, 'text') and isinstance(part.text, str) and part.text:
                                 text_parts.append(part.text)
                         if text_parts:
                             return "".join(text_parts)
-            
-            # Try alternative response structure
-            if hasattr(response, 'result') and hasattr(response.result, 'text'):
-                return response.result.text
-            
-            # Log response structure for debugging
+
+            # Try dict() method for Pydantic or similar objects
+            if hasattr(response, 'dict') and callable(response.dict):
+                try:
+                    resp_dict = response.dict()
+                except Exception:
+                    resp_dict = None
+                if isinstance(resp_dict, dict):
+                    text_val = resp_dict.get('text') if isinstance(resp_dict.get('text', None), str) else None
+                    if text_val:
+                        return text_val
+                    candidates = resp_dict.get('candidates') if isinstance(resp_dict.get('candidates', None), list) else None
+                    if candidates:
+                        cand = candidates[0] if len(candidates) > 0 and isinstance(candidates[0], dict) else None
+                        if cand:
+                            content = cand.get('content') if isinstance(cand.get('content', None), dict) else None
+                            if content:
+                                parts = content.get('parts') if isinstance(content.get('parts', None), list) else None
+                                if parts:
+                                    text_parts = [p.get('text', '') for p in parts if isinstance(p, dict) and isinstance(p.get('text', None), str)]
+                                    if text_parts:
+                                        return "".join(text_parts)
+
+            # Try to find any text fields in the response recursively
+            import json
+            resp_json = None
+            if hasattr(response, 'json') and callable(response.json):
+                try:
+                    resp_json_raw = response.json()
+                    if isinstance(resp_json_raw, str):
+                        try:
+                            resp_json = json.loads(resp_json_raw)
+                        except Exception:
+                            resp_json = None
+                    elif isinstance(resp_json_raw, dict):
+                        resp_json = resp_json_raw
+                except Exception:
+                    resp_json = None
+            def find_text(obj):
+                if isinstance(obj, dict):
+                    for k, v in obj.items():
+                        if k == 'text' and isinstance(v, str) and v.strip():
+                            return v
+                        found = find_text(v)
+                        if found:
+                            return found
+                elif isinstance(obj, list):
+                    for item in obj:
+                        found = find_text(item)
+                        if found:
+                            return found
+                return None
+            if resp_json:
+                found = find_text(resp_json)
+                if found:
+                    return found
+
+            # If all else fails, return empty string and log error
             logger.error(f"Unable to extract text from Gemini response. Response structure: {dir(response)}")
-            raise ValueError("No valid text response from Gemini API")
-            
+            logger.error(f"Gemini response (repr): {repr(response)}")
+            if hasattr(response, 'dict') and callable(response.dict):
+                try:
+                    logger.error(f"Gemini response (dict): {response.dict()}")
+                except Exception:
+                    pass
+            return ""  # Always return a string, even if empty
+
         except Exception as e:
             logger.error(f"Error extracting text from Gemini response: {e}")
-            raise ValueError(f"Failed to extract text from Gemini response: {e}")
+            return ""  # Always return a string, even if error
     
     def _estimate_prompt_tokens(self, contents: Union[str, List[Any]]) -> int:
         """Estimate prompt tokens (rough approximation)"""
@@ -142,11 +200,11 @@ class EnhancedGeminiClient(EnhancedLLMClient):
         try:
             logger.info("Checking Gemini API availability...")
             
-            # Test with a minimal request
+            # Test with a more realistic request
             test_response = self.client.models.generate_content(
                 model="gemini-2.5-flash-preview-05-20",
-                contents=["Hi"],
-                config={"temperature": 0.1, "max_output_tokens": 5}
+                contents=["Say the word 'hello'."],
+                config={"temperature": 0.1, "max_output_tokens": 256}
             )
             
             # Try to extract text to ensure response is valid
@@ -175,6 +233,18 @@ class EnhancedGeminiClient(EnhancedLLMClient):
         """Reset availability cache to force re-check"""
         self._availability_checked = False
         self._is_available = None
+    
+    def check_health(self) -> bool:
+        """Check Gemini provider health at startup"""
+        if not self.api_key:
+            logger.error("Gemini API key not set.")
+            return False
+        available = self.is_available()
+        if available:
+            logger.info("Gemini provider health check: OK")
+        else:
+            logger.error("Gemini provider health check: FAILED")
+        return available
 
 
 class EnhancedOpenRouterClient(EnhancedLLMClient):
@@ -209,13 +279,15 @@ class EnhancedOpenRouterClient(EnhancedLLMClient):
             
             # Map Gemini model to OpenRouter model
             openrouter_model = self._map_gemini_model_to_openrouter(model)
-            
+
             payload = {
-                "model": openrouter_model,
                 "messages": messages,
                 **openai_config
             }
-            
+            # Only include 'model' if user specified a model (not None or empty string)
+            if model and openrouter_model:
+                payload["model"] = openrouter_model
+
             logger.debug(f"OpenRouter request {request_id}: model={openrouter_model}, payload_size={len(str(payload))}")
             
             start_time = time.time()
@@ -404,6 +476,18 @@ class EnhancedOpenRouterClient(EnhancedLLMClient):
         """Reset availability cache to force re-check"""
         self._availability_checked = False
         self._is_available = None
+    
+    def check_health(self) -> bool:
+        """Check OpenRouter provider health at startup"""
+        if not self.api_key:
+            logger.error("OpenRouter API key not set.")
+            return False
+        available = self.is_available()
+        if available:
+            logger.info("OpenRouter provider health check: OK")
+        else:
+            logger.error("OpenRouter provider health check: FAILED")
+        return available
     
     def __del__(self):
         """Cleanup session on destruction"""

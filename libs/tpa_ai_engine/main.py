@@ -7,6 +7,13 @@ import os
 from datetime import datetime
 from google import genai
 
+# Load environment variables from .env if present
+try:
+    import dotenv
+    dotenv.load_dotenv()
+except ImportError:
+    pass  # dotenv is optional, but recommended for local dev
+
 # Modular imports
 from db_manager import DatabaseManager
 from mrm.mrm_orchestrator import MRMOrchestrator # MODIFIED: Renamed MRM to MRMOrchestrator

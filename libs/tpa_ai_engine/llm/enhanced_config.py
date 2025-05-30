@@ -215,6 +215,34 @@ def create_monitoring_dashboard_data(fallback_client: EnhancedFallbackLLMClient)
     return dashboard_data
 
 
+def check_all_provider_health():
+    """Check health of all configured providers at startup and log results."""
+    gemini_api_key = os.getenv("GEMINI_API_KEY")
+    openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
+    healthy = True
+    if gemini_api_key:
+        try:
+            gemini = EnhancedGeminiClient(gemini_api_key)
+            if not gemini.check_health():
+                healthy = False
+        except Exception as e:
+            logger.error(f"Gemini provider health check failed: {e}")
+            healthy = False
+    if openrouter_api_key:
+        try:
+            openrouter = EnhancedOpenRouterClient(openrouter_api_key)
+            if not openrouter.check_health():
+                healthy = False
+        except Exception as e:
+            logger.error(f"OpenRouter provider health check failed: {e}")
+            healthy = False
+    if not healthy:
+        logger.warning("One or more LLM providers failed health check at startup.")
+    else:
+        logger.info("All configured LLM providers passed health check.")
+    return healthy
+
+
 # Compatibility function for existing code
 def create_llm_client():
     """

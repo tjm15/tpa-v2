@@ -109,6 +109,8 @@ class EnhancedFallbackLLMClient:
         
         self.cache = UniversalLLMCache()
         self.global_metrics = LLMMetrics()
+        self.cache_hits = 0
+        self.cache_misses = 0
         
         # Provider selection strategy
         self.selection_strategy = "health_aware"  # or "round_robin", "fastest"
@@ -161,6 +163,20 @@ class EnhancedFallbackLLMClient:
             # Default: return first available provider
             return available_providers[0]
     
+    async def retry_once(self, provider, contents, config, model):
+        """Retry a provider call once with exponential backoff on transient errors"""
+        try:
+            return await provider.generate_content(contents, config, model)
+        except Exception as e:
+            error_str = str(e).lower()
+            transient_terms = ["timeout", "network", "connection", "temporarily unavailable", "5", "rate limit"]
+            if any(term in error_str for term in transient_terms):
+                delay = 2.0  # base_delay * (2 ** 0)
+                logger.warning(f"Transient error from {provider.provider_name}, retrying once in {delay}s: {e}")
+                await asyncio.sleep(delay)
+                return await provider.generate_content(contents, config, model)
+            raise
+
     async def generate_content(self, contents: Union[str, List[Any]], 
                              config: Dict[str, Any], model: str) -> LLMResponse:
         """Generate content with intelligent fallback and caching"""
@@ -176,7 +192,12 @@ class EnhancedFallbackLLMClient:
                 response_time=0,
                 cache_hit=True
             )
+            self.cache_hits += 1
+            # Patch: reconstruct LLMResponse if needed
+            if isinstance(cached_response, dict):
+                cached_response = LLMResponse(**cached_response)
             return cached_response
+        self.cache_misses += 1
         
         # Try providers in order of preference
         last_error = None
@@ -202,8 +223,24 @@ class EnhancedFallbackLLMClient:
                 
                 logger.info(f"Attempting LLM call with {provider.provider_name}")
                 
-                # Make the request
-                response = await provider.generate_content(contents, config, model)
+                # Make the request with retry_once
+                try:
+                    response = await self.retry_once(provider, contents, config, model)
+                except Exception as e:
+                    last_error = e
+                    total_time = (time.time() - request_start_time) * 1000
+                    # Record failure
+                    if attempted_providers:
+                        provider_name = attempted_providers[-1]
+                        self.provider_performance[provider_name].record_failure()
+                        self.global_metrics.add_call(
+                            provider=provider_name,
+                            success=False,
+                            response_time=total_time
+                        )
+                    logger.warning(f"Provider {attempted_providers[-1] if attempted_providers else 'unknown'} "
+                                  f"failed: {e}")
+                    continue
                 
                 # Record success
                 total_time = (time.time() - request_start_time) * 1000
@@ -219,8 +256,8 @@ class EnhancedFallbackLLMClient:
                     cache_hit=False
                 )
                 
-                # Cache the successful response
-                self.cache.set(contents, config, model, response)
+                # Cache the successful response (as dict, not object)
+                self.cache.set(contents, config, model, response.to_dict())
                 
                 logger.info(f"Successfully generated content using {provider.provider_name} "
                            f"in {total_time:.0f}ms")
@@ -280,6 +317,11 @@ class EnhancedFallbackLLMClient:
                 "avg_response_time": self.global_metrics.average_response_time,
                 "total_cost_usd": self.global_metrics.total_cost_usd,
                 "total_tokens": self.global_metrics.total_prompt_tokens + self.global_metrics.total_completion_tokens
+            },
+            "cache_stats": {
+                "hit_rate": (self.cache_hits / (self.cache_hits + self.cache_misses)) if (self.cache_hits + self.cache_misses) > 0 else 0.0,
+                "hits": self.cache_hits,
+                "misses": self.cache_misses
             },
             "providers": provider_stats,
             "current_strategy": self.selection_strategy

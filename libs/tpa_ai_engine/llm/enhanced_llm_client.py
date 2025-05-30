@@ -111,6 +111,16 @@ class LLMResponse:
     request_id: Optional[str] = None
     timestamp: datetime = field(default_factory=datetime.now)
 
+    def to_dict(self):
+        # Exclude raw_response (not serializable) and convert timestamp to ISO string
+        result = {
+            k: v for k, v in self.__dict__.items()
+            if k != 'raw_response' and not callable(v)
+        }
+        if 'timestamp' in result and hasattr(result['timestamp'], 'isoformat'):
+            result['timestamp'] = result['timestamp'].isoformat()
+        return result
+
 
 class ProviderCircuitBreaker:
     """Circuit breaker pattern for provider health management"""
@@ -316,6 +326,11 @@ class EnhancedLLMClient(ABC):
     @abstractmethod
     def is_available(self) -> bool:
         """Check if the LLM provider is available"""
+        pass
+    
+    @abstractmethod
+    def check_health(self) -> bool:
+        """Check provider health and log result. Returns True if healthy, False otherwise."""
         pass
     
     @property
