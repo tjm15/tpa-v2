@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "tpa-v2"
+version = "0.1.0"
+description = "The Planner's Assistant v2 - AI-powered planning support tool"
+authors = ["Your Name <your@email.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+fastapi = "*"
+uvicorn = "*"
+SQLAlchemy = "*"
+psycopg2-binary = "*"
+pydantic = "*"
+geoalchemy2 = "*"
+pgvector = "*"
+celery = "*"
+redis = "*"
+
+[tool.poetry.dev-dependencies]
+pytest = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

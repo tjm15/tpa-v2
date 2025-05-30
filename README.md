@@ -4,11 +4,37 @@ The Planner's Assistant v2 (TPA-v2) is an AI-powered planning support tool desig
 
 ## Overview
 
-TPA-v2 consists of three main components that work together to provide comprehensive planning support:
+TPA-v2 is built as a modular **monorepo** with shared libraries that enable maintainable, scalable development. The system consists of:
 
-- **Frontend**: Modern web interface built with SvelteKit, providing interactive workspaces for planners
-- **Backend**: FastAPI-based REST API with PostgreSQL database and vector search capabilities  
-- **Data Pipeline**: Document processing pipeline that transforms PDFs into structured data with embeddings
+- **Applications** (`packages/`): Deployable frontend, backend, and data pipeline services
+- **Shared Libraries** (`libs/`): Reusable models, schemas, utilities, and AI components  
+- **Documentation** (`docs/`): Project-wide documentation and guides
+- **Root Configuration**: Centralized database migrations, environment, and project setup
+
+### Core Components
+
+- **Frontend** (`packages/frontend/`): Modern web interface built with SvelteKit
+- **Backend** (`packages/backend/`): FastAPI-based REST API with PostgreSQL database  
+- **Data Pipeline** (`packages/data_pipeline/`): Document processing pipeline with AI enrichment
+- **Shared Libraries** (`libs/`): Common database models, API schemas, utilities, and AI engine
+
+## Monorepo Architecture
+
+```
+tpa-v2/
+├── packages/           # Deployable applications
+│   ├── frontend/      # SvelteKit web application
+│   ├── backend/       # FastAPI REST API
+│   └── data_pipeline/ # Document processing pipeline
+├── libs/              # Shared libraries
+│   ├── shared_db_models/     # SQLAlchemy database models
+│   ├── shared_api_schemas/   # Pydantic request/response models
+│   ├── shared_utils/         # Common utilities
+│   └── tpa_ai_engine/       # AI components and services
+├── docs/              # Project documentation
+├── root_alembic/      # Database migrations (shared across all apps)
+└── pyproject.toml     # Python workspace configuration
+```
 
 ## Key Features
 
@@ -36,10 +62,10 @@ TPA-v2 consists of three main components that work together to provide comprehen
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│                 │    │                 │    │                 │
 │    Frontend     │◄──►│     Backend     │◄──►│  Data Pipeline  │
 │   (SvelteKit)   │    │    (FastAPI)    │    │   (Python)      │
-│                 │    │                 │    │                 │
+│ packages/       │    │ packages/       │    │ packages/       │
+│ frontend/       │    │ backend/        │    │ data_pipeline/  │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                                 │                       │
                                 ▼                       ▼
@@ -48,6 +74,15 @@ TPA-v2 consists of three main components that work together to provide comprehen
                        │  + PostGIS      │    │   Processing    │
                        │  + pgvector     │    │   & Embeddings  │
                        └─────────────────┘    └─────────────────┘
+                                │
+                                ▼
+                       ┌─────────────────────────────────────────┐
+                       │           Shared Libraries              │
+                       │  libs/shared_db_models/      Database   │
+                       │  libs/shared_api_schemas/    API Models │
+                       │  libs/shared_utils/          Utilities  │
+                       │  libs/tpa_ai_engine/         AI Engine  │
+                       └─────────────────────────────────────────┘
 ```
 
 ### Technology Stack
@@ -57,6 +92,7 @@ TPA-v2 consists of three main components that work together to provide comprehen
 - **Data Pipeline**: Python, HuggingFace Transformers, BGE-large-en-v1.5 embeddings
 - **Database**: PostgreSQL with spatial (PostGIS) and vector (pgvector) extensions
 - **Infrastructure**: Docker, Docker Compose
+- **Architecture**: Monorepo with shared Python libraries for models, schemas, and utilities
 
 ## Quick Start
 
@@ -64,7 +100,7 @@ TPA-v2 consists of three main components that work together to provide comprehen
 
 - Docker and Docker Compose
 - Node.js 18+ (for frontend development)
-- Python 3.11+ (for data pipeline development)
+- Python 3.11+ (for backend and data pipeline development)
 
 ### Development Setup
 
@@ -74,38 +110,41 @@ TPA-v2 consists of three main components that work together to provide comprehen
    cd tpa-v2
    ```
 
-2. **Start the Database**
+2. **Setup Python Environment (Root Level)**
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   pip install -e .
+   ```
+
+3. **Start the Database**
    ```bash
    docker-compose up postgres -d
    ```
 
-3. **Setup Backend**
+4. **Run Database Migrations**
    ```bash
-   cd backend
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   
-   # Run database migrations
-   alembic upgrade head
-   
-   # Start the API server
+   # From the root directory with activated venv
+   alembic -c root_alembic.ini upgrade head
+   ```
+
+5. **Start Backend**
+   ```bash
+   cd packages/backend
    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
    ```
 
-4. **Setup Frontend**
+6. **Start Frontend**
    ```bash
-   cd frontend
+   cd packages/frontend
    npm install
    npm run dev
    ```
 
-5. **Setup Data Pipeline** (Optional)
+7. **Setup Data Pipeline** (Optional)
    ```bash
-   cd data-pipeline
-   python -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
+   cd packages/data_pipeline
+   # The shared dependencies are already available from root venv
    
    # Configure environment variables
    cp .env.example .env
@@ -136,38 +175,47 @@ Services will be available at:
 ## Project Structure
 
 ```
-tpa-v2/
-├── frontend/                 # SvelteKit web application
-│   ├── src/
-│   │   ├── lib/
-│   │   │   ├── components/   # Reusable UI components
-│   │   │   ├── services/     # API clients and data services
-│   │   │   ├── stores/       # Application state management
-│   │   │   └── types/        # TypeScript type definitions
-│   │   └── routes/           # Page components and routing
-│   ├── package.json
-│   └── README.md
-├── backend/                  # FastAPI REST API
-│   ├── app/
-│   │   ├── api/              # API route handlers
-│   │   ├── crud/             # Database operations
-│   │   ├── db_models/        # SQLAlchemy database models
-│   │   ├── models/           # Pydantic request/response models
-│   │   └── services/         # Business logic services
-│   ├── alembic/              # Database migration files
-│   ├── requirements.txt
-│   └── README.md
-├── data-pipeline/            # Document processing pipeline
-│   ├── ingest_pipeline/      # Core pipeline modules
-│   │   ├── orchestrator.py   # Main pipeline coordinator
-│   │   ├── embedder.py       # Vector embedding generation
-│   │   ├── models.py         # Database models
-│   │   └── *.py              # Processing modules
-│   ├── scripts/              # Utility scripts
-│   ├── requirements.txt
-│   └── README.md
-├── docker-compose.yml        # Multi-service container setup
-└── README.md                 # This file
+tpa-v2/                       # Monorepo root
+├── packages/                 # Deployable applications
+│   ├── frontend/            # SvelteKit web application
+│   │   ├── src/
+│   │   │   ├── lib/
+│   │   │   │   ├── components/   # UI components
+│   │   │   │   ├── services/     # API clients
+│   │   │   │   ├── stores/       # State management
+│   │   │   │   └── types/        # TypeScript types
+│   │   │   └── routes/           # Page components
+│   │   ├── package.json
+│   │   └── README.md
+│   ├── backend/             # FastAPI REST API
+│   │   ├── app/
+│   │   │   ├── api/             # API route handlers
+│   │   │   ├── crud/            # Database operations
+│   │   │   └── services/        # Business logic
+│   │   ├── requirements.txt
+│   │   └── README.md
+│   └── data_pipeline/       # Document processing pipeline
+│       ├── ingest_pipeline/ # Core pipeline modules
+│       ├── scripts/         # Processing scripts
+│       ├── requirements.txt
+│       └── README.md
+├── libs/                    # Shared libraries
+│   ├── shared_db_models/    # SQLAlchemy database models
+│   ├── shared_api_schemas/  # Pydantic request/response models
+│   ├── shared_utils/        # Common utilities
+│   └── tpa_ai_engine/       # AI components and services
+├── docs/                    # Project documentation
+│   ├── architecture.md
+│   ├── setup_guide.md
+│   └── ux_design_approach.md
+├── root_alembic/           # Database migrations (shared)
+│   ├── env.py
+│   ├── versions/
+│   └── script.py.mako
+├── pyproject.toml          # Python workspace configuration
+├── root_alembic.ini        # Alembic configuration
+├── docker-compose.yml      # Multi-service container setup
+└── README.md               # This file
 ```
 
 ## Database Schema
@@ -181,7 +229,9 @@ The system uses a comprehensive PostgreSQL schema supporting:
 - **AI Context**: Reasoning traces, material references, enrichments
 - **Reporting**: Officer reports with hierarchical sections
 
-Key tables include:
+All database models are centralized in `libs/shared_db_models/` for consistency across applications.
+
+Key shared models include:
 - `policies`, `sites`, `constraints`, `planning_applications`
 - `extracted_text_chunks`, `policy_vectors`, `application_vectors`
 - `scenarios`, `goals`, `precedent_cases`, `officer_reports`
@@ -216,8 +266,8 @@ The data pipeline transforms planning documents through:
 ### Backend Development
 
 ```bash
-cd backend
-source venv/bin/activate
+# From root directory with activated venv
+cd packages/backend
 
 # Run with auto-reload
 uvicorn app.main:app --reload
@@ -225,15 +275,16 @@ uvicorn app.main:app --reload
 # Run tests
 pytest
 
-# Database migrations
-alembic revision --autogenerate -m "Description"
-alembic upgrade head
+# Database migrations (from root)
+cd ../../
+alembic -c root_alembic.ini revision --autogenerate -m "Description"
+alembic -c root_alembic.ini upgrade head
 ```
 
 ### Frontend Development
 
 ```bash
-cd frontend
+cd packages/frontend
 
 # Development server with hot reload
 npm run dev
@@ -251,8 +302,8 @@ npm run build
 ### Data Pipeline Development
 
 ```bash
-cd data-pipeline
-source venv/bin/activate
+# From root directory with activated venv
+cd packages/data_pipeline
 
 # Process documents
 python ingest_pipeline/orchestrator.py --input ./documents
@@ -286,6 +337,8 @@ EMBEDDING_MODEL=BAAI/bge-large-en-v1.5
 BATCH_SIZE=50
 ```
 
+Note: All applications now use shared database models from `libs/shared_db_models/` and API schemas from `libs/shared_api_schemas/`.
+
 ### Docker Configuration
 
 The `docker-compose.yml` file provides:
@@ -307,7 +360,7 @@ The `docker-compose.yml` file provides:
 
 2. **Backend Deployment**
    ```bash
-   cd backend
+   cd packages/backend
    docker build -t tpa-backend .
    docker run -d --name tpa-backend \
      -p 8000:8000 \
@@ -317,7 +370,7 @@ The `docker-compose.yml` file provides:
 
 3. **Frontend Deployment**
    ```bash
-   cd frontend
+   cd packages/frontend
    npm run build
    # Deploy dist/ directory to your web server
    ```
@@ -349,13 +402,14 @@ The `docker-compose.yml` file provides:
 
 ### Backend Tests
 ```bash
-cd backend
+# From root with activated venv
+cd packages/backend
 pytest tests/ -v --cov=app
 ```
 
 ### Frontend Tests
 ```bash
-cd frontend
+cd packages/frontend
 npm test
 ```
 
@@ -405,6 +459,6 @@ For questions, issues, or contributions:
 1. Check existing [Issues](../../issues) for similar problems
 2. Create a new issue with detailed description
 3. For development questions, see component-specific README files:
-   - [Backend README](backend/README.md)
-   - [Frontend README](frontend/README.md)  
-   - [Data Pipeline README](data-pipeline/README.md)
+   - [Backend README](packages/backend/README.md)
+   - [Frontend README](packages/frontend/README.md)  
+   - [Data Pipeline README](packages/data_pipeline/README.md)
