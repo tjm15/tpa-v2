@@ -50,57 +50,36 @@ if __name__ == "__main__":
         policy_man = PolicyManager(db_man) # PolicyManager now requires db_man
 
         print("\n--- Ensuring Schema and Ingesting Minimal Sample Data (if first run) ---")
-        schema_file_path = "./schema.sql";
+        # Instead of using schema.sql, rely on shared_db_models and migrations for schema setup
         try:
-            with open(schema_file_path, "r") as f_schema:
-                if db_man.conn is not None:
-                    cur = db_man.conn.cursor()
-                    # Check if 'documents' table exists to infer if schema was run
-                    cur.execute("SELECT to_regclass('public.documents');")
-                    table_exists = cur.fetchone()[0]
-                    cur.close()
-                else:
-                    # This case should ideally not be reached if DatabaseManager() succeeded
-                    raise RuntimeError("Database connection is not established after DatabaseManager initialization.")
+            # Check if 'documents' table exists to infer if DB is initialized
+            if db_man.conn is not None:
+                cur = db_man.conn.cursor()
+                cur.execute("SELECT to_regclass('public.documents');")
+                table_exists = cur.fetchone()[0]
+                cur.close()
+            else:
+                raise RuntimeError("Database connection is not established after DatabaseManager initialization.")
 
-                if not table_exists:
-                    print("Executing schema.sql...")
-                    # Read the entire schema file
-                    sql_commands = f_schema.read()
-                    # Split commands if necessary, though execute_query might handle multi-statement SQL
-                    # For simplicity, assuming execute_query can handle it or schema.sql is single/batchable
-                    db_man.execute_query(sql_commands) # Pass the whole content
-                    print("Schema executed.")
-                    
-                    # Ingest sample data only if schema was just created
-                    print("Ingesting minimal sample data for initial scan...")
-                    ug_doc_id = db_man.add_document(filename="UserGuide_EC.pdf", title="Earls Court User Guide", document_type="UserGuide", source="ECDC_EarlsCourt_App", page_count=54)
-                    if ug_doc_id:
-                        db_man.add_document_chunk(doc_id=ug_doc_id, page_number=1, chunk_text="This major hybrid application for Earls Court proposes 4000 homes and extensive commercial space, including significant public realm and measures for sustainability and heritage conservation.", section="Executive Summary")
-                    
-                    es_nts_id = db_man.add_document(filename="ES_NTS_EC.pdf", title="ES Non-Technical Summary", document_type="ES_NTS", source="ECDC_EarlsCourt_App", page_count=20)
-                    if es_nts_id:
-                        db_man.add_document_chunk(doc_id=es_nts_id, page_number=2, chunk_text="The Environmental Statement covers impacts on: Housing, Design, Townscape, Heritage, Transport, Air Quality, Noise, Biodiversity, Flood Risk, Socio-economics.", section="ES Scope")
-                    
-                    # ADDED: Ingest sample policy data via PolicyManager
-                    print("Ingesting sample policy data...")
-                    policy_man._ingest_sample_policies_from_json() # Call the method to ingest policies
-                    print("Minimal sample data (application & policy) ingested.")
-                else: 
-                    print("Tables exist. Skipping schema/data ingestion.")
-        except FileNotFoundError: 
-            print(f"ERROR: schema.sql not found at {schema_file_path}. Ensure it's in the same directory as main.py."); exit(1)
-        except psycopg2.Error as db_err: # More specific error handling for DB operations
+            if not table_exists:
+                print("Database schema is missing. Please run the Alembic migrations from the shared models to initialize the schema.")
+                exit(1)
+            else:
+                print("Tables exist. Skipping schema/data ingestion.")
+        except psycopg2.Error as db_err:
             print(f"ERROR during schema/data setup (DB operation): {db_err}")
-            # db_man.conn might be None or closed, or in an unusable state
-            if db_man and db_man.conn: 
-                try: db_man.conn.rollback() # Attempt to rollback if transaction was open
-                except: pass # Ignore rollback errors
-            exit(1) # Exit on schema/data setup errors
-        except Exception as schema_e: 
-            print(f"ERROR during schema/data setup (General): {schema_e}"); 
+            if db_man and db_man.conn:
+                try: db_man.conn.rollback()
+                except: pass
+            exit(1)
+        except Exception as schema_e:
+            print(f"ERROR during schema/data setup (General): {schema_e}")
             import traceback; traceback.print_exc()
-            exit(1) # Exit on schema/data setup errors
+            exit(1)
+
+        # Optionally, ingest minimal sample data if needed here, using shared models and managers
+        # For example, you could check for the presence of a key document and ingest if missing
+        # ...
 
         print("\n--- Initializing MRM Orchestrator ---")
         report_type_key_to_use = "Default_MajorHybrid" # Example report type
