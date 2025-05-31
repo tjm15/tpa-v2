@@ -5,7 +5,7 @@ Handles application context caching and summarization
 """
 
 from typing import Dict, List, Any
-from db_manager import DatabaseManager
+from ..db_manager import DatabaseManager
 
 
 class ApplicationContextManager:

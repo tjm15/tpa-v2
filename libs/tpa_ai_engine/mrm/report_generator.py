@@ -6,7 +6,7 @@ Handles final report generation and formatting
 
 import json
 from typing import Dict, List, Any, Optional
-from core_types import ReasoningNode, ProvenanceLog
+from ..core_types import ReasoningNode, ProvenanceLog
 
 
 class ReportGenerator:

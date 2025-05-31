@@ -9,7 +9,7 @@ import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor
 from typing import Dict, List, Any, Callable
-from core_types import ReasoningNode, IntentStatus
+from ..core_types import ReasoningNode, IntentStatus
 
 
 class ParallelProcessor:

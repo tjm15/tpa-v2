@@ -6,12 +6,12 @@ from typing import cast
 
 from ..config import MRM_CORE_GEN_CONFIG, MRM_MODEL_NAME, CACHE_ENABLED, create_llm_client
 
-from core_types import ReasoningNode, Intent, IntentStatus, ProvenanceLog
-from retrieval.retriever import AgenticRetriever
+from ..core_types import ReasoningNode, Intent, IntentStatus, ProvenanceLog
+from ..retrieval.retriever import AgenticRetriever
 from ..agents.base_agent import BaseSubsidiaryAgent
-from knowledge_base.policy_manager import PolicyManager
-from knowledge_base.report_template_manager import ReportTemplateManager
-from knowledge_base.material_consideration_ontology import MaterialConsiderationOntology
+from ..knowledge_base.policy_manager import PolicyManager
+from ..knowledge_base.report_template_manager import ReportTemplateManager
+from ..knowledge_base.material_consideration_ontology import MaterialConsiderationOntology
 
 class NodeProcessor:
     def __init__(self, api_key: str, retriever: AgenticRetriever, subsidiary_agents: Dict[str, BaseSubsidiaryAgent], policy_manager: PolicyManager):

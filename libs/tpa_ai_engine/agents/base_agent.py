@@ -1,9 +1,9 @@
 # agents/base_agent.py
 from typing import Dict, Any, Optional, List
-from config import SUBSIDIARY_AGENT_GEN_CONFIG, VISUAL_HERITAGE_AGENT_GEN_CONFIG, SUBSIDIARY_AGENT_MODEL_NAME, GEMINI_API_KEY, CACHE_ENABLED, create_llm_client
+from ..config import SUBSIDIARY_AGENT_GEN_CONFIG, VISUAL_HERITAGE_AGENT_GEN_CONFIG, SUBSIDIARY_AGENT_MODEL_NAME, GEMINI_API_KEY, CACHE_ENABLED, create_llm_client
+from ..core_types import Intent
 import time
 import json
-from core_types import Intent
 
 class BaseSubsidiaryAgent:
     def __init__(self, agent_name: str): 

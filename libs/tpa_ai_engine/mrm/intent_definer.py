@@ -9,11 +9,10 @@ from contextlib import contextmanager
 from typing import Dict, List, Optional, Any
 from pathlib import Path
 
-# Assuming these are correctly imported relative to this file's location
-from core_types import ReasoningNode, Intent, ProvenanceLog
-from knowledge_base.policy_manager import PolicyManager
+from ..core_types import ReasoningNode, Intent, ProvenanceLog
+from ..knowledge_base.policy_manager import PolicyManager
 from ..config import MRM_MODEL_NAME, INTENT_DEFINER_GEN_CONFIG, CACHE_ENABLED, create_llm_client
-from shared_utils.llm_task_queue import LLMRedisCache, get_celery_app
+from ...shared_utils.llm_task_queue import LLMRedisCache, get_celery_app
 
 def load_prompt_from_file(file_path: str) -> str:
     prompt_path = Path(__file__).parent.parent / 'prompts' / Path(file_path).name

@@ -8,10 +8,10 @@ import traceback
 
 from typing import Dict, List, Any
 
-from core_types import ReasoningNode, Intent, IntentStatus, ProvenanceLog
-from knowledge_base.material_consideration_ontology import MaterialConsiderationOntology
-from mrm.intent_definer import IntentDefiner
-from mrm.node_processor import NodeProcessor
+from ..core_types import ReasoningNode, Intent, IntentStatus, ProvenanceLog
+from ..knowledge_base.material_consideration_ontology import MaterialConsiderationOntology
+from .intent_definer import IntentDefiner
+from .node_processor import NodeProcessor
 
 
 class DynamicNodeExpander:

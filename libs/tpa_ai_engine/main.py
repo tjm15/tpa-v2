@@ -15,18 +15,18 @@ except ImportError:
     pass  # dotenv is optional, but recommended for local dev
 
 # Modular imports
-from db_manager import DatabaseManager
-from mrm.mrm_orchestrator import MRMOrchestrator # MODIFIED: Renamed MRM to MRMOrchestrator
-from knowledge_base.policy_manager import PolicyManager
-from knowledge_base.report_template_manager import ReportTemplateManager
-from knowledge_base.material_consideration_ontology import MaterialConsiderationOntology
+from .db_manager import DatabaseManager
+from .mrm.mrm_orchestrator import MRMOrchestrator # MODIFIED: Renamed MRM to MRMOrchestrator
+from .knowledge_base.policy_manager import PolicyManager
+from .knowledge_base.report_template_manager import ReportTemplateManager
+from .knowledge_base.material_consideration_ontology import MaterialConsiderationOntology
 import importlib
-import config
+from . import config
 
 if __name__ == "__main__":
     load_dotenv()  # Ensure .env is loaded before any config import
     importlib.reload(config)
-    from config import GEMINI_API_KEY, REPORT_TEMPLATE_DIR, POLICY_KB_DIR, MC_ONTOLOGY_DIR, DB_CONFIG
+    from .config import GEMINI_API_KEY, REPORT_TEMPLATE_DIR, POLICY_KB_DIR, MC_ONTOLOGY_DIR, DB_CONFIG
     print("DEBUG DB_CONFIG:", DB_CONFIG)  # DEBUG PRINT
     start_time = time.time()
     if not GEMINI_API_KEY: print("CRITICAL: GEMINI_API_KEY is not set. Exiting."); exit(1)

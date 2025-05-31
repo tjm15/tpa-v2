@@ -1,0 +1,123 @@
+{
+  "report_type_id": "Default_MajorHybrid",
+  "report_id_prefix": "MajorHybridApp",
+  "description": "Default Standard Report for Major Hybrid Planning Applications",
+  "sections": [
+    {
+      "node_id": "1.0_SiteAndApplication",
+      "description": "Site Description, Proposal Details & Planning History",
+      "node_type_tag": "IntroductionBlock",
+      "generic_material_considerations": [
+        "site_context",
+        "proposal_details",
+        "planning_history"
+      ],
+      "specific_policy_focus_ids": [
+        "LocalPlan_IntroductoryPolicy"
+      ],
+      "depends_on_nodes": [],
+      "sub_sections": [
+        {
+          "node_id": "1.1_SiteLocationAndDescription",
+          "description": "Site Location and Description",
+          "node_type_tag": "SiteDescription",
+          "generic_material_considerations": [
+            "site_identification",
+            "existing_conditions"
+          ],
+          "specific_policy_focus_ids": [
+            "LocalPlan_SiteContextPolicy"
+          ],
+          "key_evidence_document_types": [
+            "ApplicationForm",
+            "SiteLocationPlan",
+            "DAS_Context",
+            "UserGuide_SiteOverview"
+          ]
+        },
+        {
+          "node_id": "1.2_ProposalInDetail",
+          "description": "The Proposed Development (Detailed & Outline where applicable)",
+          "node_type_tag": "ProposalSummary",
+          "generic_material_considerations": [
+            "development_quantum",
+            "phasing",
+            "hybrid_nature"
+          ],
+          "specific_policy_focus_ids": [
+            "LocalPlan_DevelopmentManagementPolicy"
+          ],
+          "key_evidence_document_types": [
+            "DAS_Proposal",
+            "DevelopmentSpecification",
+            "ParameterPlans",
+            "UserGuide_ProposalDetails"
+          ]
+        },
+        {
+          "node_id": "1.3_RelevantPlanningHistory",
+          "description": "Relevant Planning History",
+          "node_type_tag": "PlanningHistory",
+          "generic_material_considerations": [
+            "precedent",
+            "extant_permissions"
+          ],
+          "key_evidence_document_types": [
+            "PlanningStatement_HistorySection",
+            "PreviousDecisionNotices"
+          ]
+        }
+      ]
+    },
+    {
+      "node_id": "2.0_ConsultationResponses",
+      "description": "Summary of Consultation Responses",
+      "node_type_tag": "ConsultationSummaryBlock",
+      "depends_on_nodes": [
+        "1.0_SiteAndApplication/1.2_ProposalInDetail"
+      ]
+    },
+    {
+      "node_id": "3.0_PlanningPolicyFramework",
+      "description": "Relevant Planning Policy Framework",
+      "node_type_tag": "PolicyFrameworkSummaryBlock",
+      "depends_on_nodes": []
+    },
+    {
+      "node_id": "4.0_AssessmentOfMaterialConsiderations",
+      "description": "Officer's Assessment of Material Planning Considerations",
+      "node_type_tag": "MaterialConsiderationsBlock_Parent",
+      "is_dynamic_parent_node": true,
+      "depends_on_nodes": [
+        "1.0_SiteAndApplication/1.2_ProposalInDetail",
+        "2.0_ConsultationResponses",
+        "3.0_PlanningPolicyFramework"
+      ]
+    },
+    {
+      "node_id": "5.0_OtherMatters",
+      "description": "Other Relevant Matters (e.g., CIL, Equalities)",
+      "node_type_tag": "OtherConsiderationsBlock",
+      "depends_on_nodes": [
+        "4.0_AssessmentOfMaterialConsiderations"
+      ]
+    },
+    {
+      "node_id": "6.0_PlanningBalanceAndConclusion",
+      "description": "Overall Planning Balance and Officer's Conclusion",
+      "node_type_tag": "PlanningBalanceAndConclusionBlock",
+      "depends_on_nodes": [
+        "4.0_AssessmentOfMaterialConsiderations",
+        "5.0_OtherMatters"
+      ]
+    },
+    {
+      "node_id": "7.0_Recommendation",
+      "description": "Officer's Recommendation",
+      "node_type_tag": "FinalRecommendationBlock",
+      "depends_on_nodes": [
+        "6.0_PlanningBalanceAndConclusion"
+      ]
+    }
+  ]
+}

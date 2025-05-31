@@ -6,7 +6,7 @@ from PIL import Image # Assuming PIL is installed
 import io 
 
 from .base_agent import BaseSubsidiaryAgent
-from core_types import Intent, SecurityAssessment 
+from ..core_types import Intent, SecurityAssessment
 
 class VisualHeritageAgent(BaseSubsidiaryAgent):
     def __init__(self, agent_name: str):

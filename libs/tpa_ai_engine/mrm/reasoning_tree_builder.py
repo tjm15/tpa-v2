@@ -6,9 +6,9 @@ Handles template loading and reasoning tree construction
 
 import uuid
 from typing import Dict, List, Any
-from core_types import ReasoningNode
-from knowledge_base.report_template_manager import ReportTemplateManager
-from knowledge_base.material_consideration_ontology import MaterialConsiderationOntology
+from ..core_types import ReasoningNode
+from ..knowledge_base.report_template_manager import ReportTemplateManager
+from ..knowledge_base.material_consideration_ontology import MaterialConsiderationOntology
 
 
 class ReasoningTreeBuilder:

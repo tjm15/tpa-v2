@@ -4,8 +4,8 @@
 import json
 from typing import List, Dict, Set, Any
 import uuid
-from db_manager import DatabaseManager # Relative import for modular structure
-from core_types import Intent, RetrievedItem, RetrievalSourceType
+from ..db_manager import DatabaseManager # Relative import for modular structure
+from ..core_types import Intent, RetrievedItem, RetrievalSourceType
 from ..config import MAX_CONTEXT_DOCUMENTS_FOR_FULL_INJECTION, MAX_CHUNKS_FOR_CONTEXT, MAX_TOKENS_PER_GEMINI_CALL_APPROX, EMBEDDING_DIMENSION
 
 def get_embedding(text: str) -> List[float]: # Placeholder

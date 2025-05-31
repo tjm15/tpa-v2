@@ -8,21 +8,21 @@ import asyncio
 from typing import Dict, List, Any
 
 # Core application components
-from core_types import ReasoningNode, Intent, IntentStatus, ProvenanceLog
-from db_manager import DatabaseManager
-from knowledge_base.report_template_manager import ReportTemplateManager
-from knowledge_base.material_consideration_ontology import MaterialConsiderationOntology
-from knowledge_base.policy_manager import PolicyManager
-from retrieval.retriever import AgenticRetriever
-from mrm.intent_definer import IntentDefiner
-from mrm.node_processor import NodeProcessor
+from ..core_types import ReasoningNode, Intent, IntentStatus, ProvenanceLog
+from ..db_manager import DatabaseManager
+from ..knowledge_base.report_template_manager import ReportTemplateManager
+from ..knowledge_base.material_consideration_ontology import MaterialConsiderationOntology
+from ..knowledge_base.policy_manager import PolicyManager
+from ..retrieval.retriever import AgenticRetriever
+from .intent_definer import IntentDefiner
+from .node_processor import NodeProcessor
 
 # Modular components
-from mrm.application_context_manager import ApplicationContextManager
-from mrm.reasoning_tree_builder import ReasoningTreeBuilder
-from mrm.dynamic_node_expander import DynamicNodeExpander
-from mrm.parallel_processor import ParallelProcessor
-from mrm.report_generator import ReportGenerator
+from .application_context_manager import ApplicationContextManager
+from .reasoning_tree_builder import ReasoningTreeBuilder
+from .dynamic_node_expander import DynamicNodeExpander
+from .parallel_processor import ParallelProcessor
+from .report_generator import ReportGenerator
 
 from ..agents.visual_heritage_agent import VisualHeritageAgent
 from ..agents.policy_analysis_agent import PolicyAnalysisAgent, DefaultPlanningAnalystAgent, LLMPlanningPolicyAnalyst

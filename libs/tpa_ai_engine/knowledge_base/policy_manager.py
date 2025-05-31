@@ -4,7 +4,7 @@ import os
 from typing import List, Dict, Optional, Any
 from uuid import UUID
 
-from db_manager import DatabaseManager, get_embedding as db_get_embedding
+from ..db_manager import DatabaseManager, get_embedding as db_get_embedding
 from ..config import POLICY_KB_DIR, EMBEDDING_DIMENSION
 
 
