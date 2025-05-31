@@ -15,23 +15,7 @@ if not GEMINI_API_KEY:
 if not OPENROUTER_API_KEY:
     print("WARNING: OPENROUTER_API_KEY not found. Fallback LLM provider will not be available.")
 
-DB_CONFIG = {
-    "dbname": os.getenv("DB_NAME", "tpa"),
-    "user": os.getenv("DB_USER", "tpa"),
-    "password": os.getenv("DB_PASSWORD", "tpa"),
-    "host": os.getenv("DB_HOST", "localhost"),
-    "port": os.getenv("DB_PORT", "5432")
-}
-
-MRM_MODEL_NAME = "gemini-2.5-flash-preview-05-20"
-SUBSIDIARY_AGENT_MODEL_NAME = "gemini-2.5-flash-preview-05-20"
-GEMINI_PRO_VISION_MODEL_NAME = "gemini-2.5-flash-preview-05-20" # ADDED
-
-MAX_CONTEXT_DOCUMENTS_FOR_FULL_INJECTION = 2
-MAX_CHUNKS_FOR_CONTEXT = 25
-MAX_TOKENS_PER_GEMINI_CALL_APPROX = 1000000 # For Gemini 1.5 Pro. Adjust if using 1.0 Pro (30k)
-
-EMBEDDING_DIMENSION = 768
+EMBEDDING_DIMENSION = 1024
 
 # Cache Configuration
 CACHE_ENABLED = os.getenv("CACHE_ENABLED", "true").lower() == "true"
@@ -39,7 +23,6 @@ CACHE_MAX_AGE_HOURS = int(os.getenv("CACHE_MAX_AGE_HOURS", "24"))
 CACHE_DIR = os.getenv("CACHE_DIR", "./cache/gemini_responses")
 
 REPORT_TEMPLATE_DIR = "./report_templates/"
-POLICY_KB_DIR = "./policy_kb/" # Source for initial policy ingestion
 MC_ONTOLOGY_DIR = "./mc_ontology_data/"
 
 # LLM Generation Configuration
@@ -50,6 +33,11 @@ DEFAULT_LLM_TEMPERATURE_CREATIVE = 0.4
 PARALLEL_ASYNC_LLM_MODE = os.getenv("PARALLEL_ASYNC_LLM_MODE", "true").lower() == "true"
 MAX_CONCURRENT_LLM_CALLS = int(os.getenv("MAX_CONCURRENT_LLM_CALLS", "15"))  # Increased from 3 to 15 for better throughput
 LLM_CALL_TIMEOUT_SECONDS = int(os.getenv("LLM_CALL_TIMEOUT_SECONDS", "600"))  # Increased to 10 minutes per LLM call
+
+# Add back context constants for retrieval
+MAX_CONTEXT_DOCUMENTS_FOR_FULL_INJECTION = 2
+MAX_CHUNKS_FOR_CONTEXT = 25
+MAX_TOKENS_PER_GEMINI_CALL_APPROX = 1000000
 
 # Centralized Gemini LLM config builder
 

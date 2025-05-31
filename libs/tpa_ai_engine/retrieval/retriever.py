@@ -7,39 +7,18 @@ import uuid
 from ..db_manager import DatabaseManager # Relative import for modular structure
 from ..core_types import Intent, RetrievedItem, RetrievalSourceType
 from ..config import MAX_CONTEXT_DOCUMENTS_FOR_FULL_INJECTION, MAX_CHUNKS_FOR_CONTEXT, MAX_TOKENS_PER_GEMINI_CALL_APPROX, EMBEDDING_DIMENSION
-
-def get_embedding(text: str) -> List[float]: # Placeholder
-    # In a real system, this would be a proper embedding model call
-    # print(f"INFO: (Retriever) Generating dummy embedding for: '{text[:30]}...'")
-    return [0.1] * EMBEDDING_DIMENSION
+from libs.shared_db_models.text_chunks import ExtractedTextChunk
+from libs.shared_db_models.vectors import PolicyVector
+from sqlalchemy import func
 
 class AgenticRetriever:
     def __init__(self, db_manager: DatabaseManager):
         self.db_manager = db_manager
 
     def _get_semantic_results(self, query_text: str, limit: int = 10) -> List[Dict[str, Any]]:
-        if not query_text: return []
-        query_embedding = get_embedding(query_text)
-        # Note: Ensure your embeddings are normalized if using vector_cosine_ops for true cosine similarity.
-        # For L2 distance (often used), vector_l2_ops is correct.
-        # For dot product (inner product), vector_ip_ops (often for non-normalized or specific embeddings like OpenAI's).
-        semantic_query = """
-        SELECT dc.chunk_id, dc.chunk_text, dc.page_number, dc.section, 
-               d.doc_id, d.title as doc_title, d.document_type,
-               ce.embedding <-> %s::vector AS distance 
-        FROM document_chunks dc
-        JOIN documents d ON dc.doc_id = d.doc_id
-        JOIN chunk_embeddings ce ON dc.chunk_id = ce.chunk_id
-        ORDER BY distance ASC
-        LIMIT %s; 
-        """
-        try:
-            # pgvector expects list for embedding, not tuple
-            results = self.db_manager.execute_query(semantic_query, (query_embedding, limit), fetch_all=True)
-            return results if results else []
-        except Exception as e:
-            print(f"ERROR: Semantic search failed: {type(e).__name__} - {e}")
-            return []
+        # Semantic search should use precomputed embeddings from PolicyVector
+        # Placeholder: actual embedding lookup should be implemented
+        return []
 
     def retrieve_and_prepare_context(self, intent: Intent):
         intent.provenance.add_action("RetrievalContextPrepStart", {"cfg": intent.retrieval_config})
