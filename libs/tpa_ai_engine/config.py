@@ -119,4 +119,4 @@ def create_enhanced_llm_client():
         return create_llm_client()
 
 # Environment variable to choose LLM client implementation
-USE_ENHANCED_LLM_CLIENT = os.getenv("USE_ENHANCED_LLM_CLIENT", "false").lower() == "true"
+USE_ENHANCED_LLM_CLIENT = True

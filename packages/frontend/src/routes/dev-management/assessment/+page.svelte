@@ -4,9 +4,9 @@
 	import SearchFilterPanel from '$lib/components/shared/SearchFilterPanel.svelte';
 	import MapDisplay from '$lib/components/shared/MapDisplay.svelte';
 	import PolicyCard from '$lib/components/dm/PolicyCard.svelte';
-	import ConstraintDisplay from '$lib/components/dm/ConstraintDisplay.svelte';
+	import SpatialDesignationDisplay from '$lib/components/dm/ConstraintDisplay.svelte';
 	import { planningApplications, sites } from '$lib/stores/mainDataStore';
-	import type { PlanningApplication, Site, Constraint, Policy } from '$types/models';
+	import type { PlanningApplication, Site, SpatialDesignation, Policy } from '$types/models';
 	import { get } from 'svelte/store';
 
 	let allApps: PlanningApplication[] = get(planningApplications);
@@ -16,7 +16,7 @@
 	let selected: PlanningApplication | Site | null = null;
 	let currentSite: Site | null = null;
 	let currentApp: PlanningApplication | null = null;
-	let siteConstraints: Constraint[] = [];
+	let siteSpatialDesignations: SpatialDesignation[] = [];
 	let applicablePolicies: Policy[] = [];
 
 	function handleItemSelected(event: CustomEvent) {
@@ -31,7 +31,7 @@
 			currentSite = null;
 			currentApp = null;
 		}
-		siteConstraints = currentApp?.constraints || currentSite?.constraints || [];
+		siteSpatialDesignations = currentApp?.spatialDesignations || currentSite?.spatialDesignations || [];
 		applicablePolicies = currentApp?.relevantPolicies || currentSite?.applicablePolicies || [];
 	}
 </script>
@@ -44,10 +44,10 @@
 	<!-- Central: Map and details -->
 	<div class="flex-1 flex flex-col border-r">
 		<div class="flex-1 bg-gray-100">
-			<MapDisplay site={currentSite} constraintsToDisplay={siteConstraints} />
+			<MapDisplay site={currentSite} constraintsToDisplay={siteSpatialDesignations} />
 		</div>
 	</div>
-	<!-- Right: Policies/Constraints -->
+	<!-- Right: Policies/Spatial Designations -->
 	<div class="w-1/4 min-w-[300px] p-4 overflow-y-auto">
 		<h3 class="text-lg font-semibold mb-3">Applicable Policies</h3>
 		<div class="space-y-3">
@@ -59,14 +59,14 @@
 				<p class="text-gray-500">No applicable policies for this selection.</p>
 			{/if}
 		</div>
-		<h3 class="text-lg font-semibold mt-6 mb-3">Overlapping Constraints</h3>
+		<h3 class="text-lg font-semibold mt-6 mb-3">Overlapping Spatial Designations</h3>
 		<div class="space-y-3">
-			{#if siteConstraints.length > 0}
-				{#each siteConstraints as constraint (constraint.id)}
-					<ConstraintDisplay {constraint} />
+			{#if siteSpatialDesignations.length > 0}
+				{#each siteSpatialDesignations as spatialDesignation (spatialDesignation.id)}
+					<SpatialDesignationDisplay spatialDesignation={spatialDesignation} />
 				{/each}
 			{:else}
-				<p class="text-gray-500">No constraints for this selection.</p>
+				<p class="text-gray-500">No spatial designations for this selection.</p>
 			{/if}
 		</div>
 	</div>

@@ -1,8 +1,7 @@
 import datetime
-from libs.shared_db_models.constraints import Constraint, DerivedGeographicConstraint
+from libs.shared_db_models.spatial_designations import SpatialDesignation, DerivedGeographicSpatialDesignation
 
-
-def map_constraints(
+def map_spatial_designations(
     session,
     enrichments: list,
     plan_doc
@@ -10,18 +9,18 @@ def map_constraints(
     now = datetime.datetime.utcnow()
     for item in enrichments:
         for place in item.get('geographic_mentions', []):
-            c = Constraint(
+            sd = SpatialDesignation(
                 name=place,
                 type='geographic',
                 source_policy_id=None,
                 source_document=str(plan_doc.id),
                 created_at=now
             )
-            session.add(c)
+            session.add(sd)
             session.flush()
-            d = DerivedGeographicConstraint(
+            d = DerivedGeographicSpatialDesignation(
                 place_name=place,
-                constraint_id=c.id,
+                spatial_designation_id=sd.id,
                 confidence=0.9
             )
             session.add(d)

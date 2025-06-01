@@ -22,13 +22,13 @@ The frontend communicates with backend APIs that use shared database models and 
 
 - **Plan Production Workspace**
   - **Policy Tools:** Draft, edit, and analyze planning policies.
-  - **Site Allocation:** Manage and justify site allocations with policy and constraint context.
+  - **Site Allocation:** Manage and justify site allocations with policy and spatial designation context.
   - **Scenario Analysis:** Compare alternative plan scenarios, track goal performance, and visualize trade-offs.
   - **Goal Tracker:** Monitor strategic goals, their status, and cross-cutting insights.
   - **Document Editor:** Structure and edit plan documents with integrity checks and export options.
 
 - **Development Management Workspace**
-  - **Site Assessment:** Assess planning applications and sites against constraints and policies.
+  - **Site Assessment:** Assess planning applications and sites against spatial designations and policies.
   - **Reasoning Mode:** Step through application reasoning, link policies, and analyze trade-offs.
   - **Precedent Review:** Browse and compare relevant case precedents.
   - **Report Generation:** Draft and export officer reports with supporting evidence.
@@ -118,7 +118,7 @@ npm run preview
 - **[SvelteKit](https://kit.svelte.dev/):** Modern, fast web framework for building interactive apps.
 - **[TypeScript](https://www.typescriptlang.org/):** Type-safe JavaScript.
 - **[Tailwind CSS](https://tailwindcss.com/):** Utility-first CSS framework.
-- **[Leaflet](https://leafletjs.com/):** Interactive maps for site and constraint visualization.
+- **[Leaflet](https://leafletjs.com/):** Interactive maps for site and spatial designation visualization.
 
 ---
 

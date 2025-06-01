@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import (
     policies,
     sites,
-    constraints,
+    spatial_designations,
     plan_documents,
     scenarios,
     goals,
@@ -34,7 +34,7 @@ app.add_middleware(
 # Mount routers for each resource
 app.include_router(policies.router, prefix="/policies", tags=["Policies"])
 app.include_router(sites.router, prefix="/sites", tags=["Sites"])
-app.include_router(constraints.router, prefix="/constraints", tags=["Constraints"])
+app.include_router(spatial_designations.router, prefix="/spatial_designations", tags=["SpatialDesignations"])
 app.include_router(plan_documents.router, prefix="/plan-documents", tags=["PlanDocuments"])
 app.include_router(scenarios.router, prefix="/scenarios", tags=["Scenarios"])
 app.include_router(goals.router, prefix="/goals", tags=["Goals"])

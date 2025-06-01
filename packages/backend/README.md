@@ -26,7 +26,7 @@ All imports use these shared libraries to ensure consistency and maintainability
 
 - **Policies** (`/policies`) - Planning policy management and analysis
 - **Sites** (`/sites`) - Site allocation and spatial data management
-- **Constraints** (`/constraints`) - Planning constraints and spatial overlays
+- **Spatial Designations** (`/spatial_designations`) - Planning spatial designations and spatial overlays
 - **Plan Documents** (`/plan-documents`) - Document structure and content management
 - **Scenarios** (`/scenarios`) - Alternative development scenario analysis
 - **Goals** (`/goals`) - Strategic planning goal tracking
@@ -38,7 +38,7 @@ All imports use these shared libraries to ensure consistency and maintainability
 ### Key Capabilities
 
 - **Vector Search**: Semantic search across policies, applications, and precedents using pgvector
-- **Spatial Analysis**: PostGIS integration for constraint and site analysis
+- **Spatial Analysis**: PostGIS integration for spatial designation and site analysis
 - **AI Integration**: OpenAI API integration for content generation and analysis
 - **Document Processing**: Hierarchical document structure with text chunk extraction
 - **Async Operations**: Fully async FastAPI implementation with SQLAlchemy
@@ -59,7 +59,7 @@ All imports use these shared libraries to ensure consistency and maintainability
 The system uses a comprehensive PostgreSQL schema with:
 
 - **Document Management**: Source files, text chunks, and document nodes
-- **Spatial Data**: Sites, constraints with PostGIS geometry support
+- **Spatial Data**: Sites, spatial designations with PostGIS geometry support
 - **Planning Domain**: Policies, applications, precedents with cross-references
 - **AI Context**: Vector embeddings, retrieval logs, and AI-generated content
 - **Reporting**: Officer reports with hierarchical section structure

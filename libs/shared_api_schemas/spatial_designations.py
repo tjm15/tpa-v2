@@ -3,7 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 from pydantic import BaseModel
 
-class Constraint(BaseModel):
+class SpatialDesignation(BaseModel):
     id: str
     name: str
     type: str  # free-text or from tags[]
@@ -13,10 +13,9 @@ class Constraint(BaseModel):
     geom: Optional[Dict[str, Any]] = None  # GEOMETRY(POLYGON, 4326) as dict
     createdAt: datetime
 
-
-class DerivedGeographicConstraint(BaseModel):
+class DerivedGeographicSpatialDesignation(BaseModel):
     id: str
     placeName: str
-    constraintId: str
+    spatialDesignationId: str
     confidence: Optional[Decimal] = None
     createdAt: datetime

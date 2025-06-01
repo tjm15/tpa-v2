@@ -6,7 +6,7 @@ This data pipeline is part of a **monorepo architecture** with shared database m
 
 ## Overview
 
-This data pipeline processes planning documents (PDFs, policies, reports) through multiple stages including document parsing, text chunking, AI-powered analysis, policy extraction, constraint mapping, and vector embedding generation. The processed data supports both Plan-Making and Development Management planning workflows using shared data models from `libs/shared_db_models/`.
+This data pipeline processes planning documents (PDFs, policies, reports) through multiple stages including document parsing, text chunking, AI-powered analysis, policy extraction, spatial designation mapping, and vector embedding generation. The processed data supports both Plan-Making and Development Management planning workflows using shared data models from `libs/shared_db_models/`.
 
 ## Monorepo Integration
 
@@ -24,8 +24,8 @@ All database operations use the same models as the backend API, ensuring data co
 - **Document Ingestion**: PDF document processing with text extraction and chunking
 - **Policy Extraction**: Automated extraction and structuring of planning policies
 - **Vector Embeddings**: High-quality embeddings using BGE-large-en-v1.5 model via HuggingFace
-- **Knowledge Graph**: Construction of policy relationships and constraint networks
-- **Constraint Mapping**: Spatial and semantic constraint identification
+- **Knowledge Graph**: Construction of policy relationships and spatial designation networks
+- **Spatial Designation Mapping**: Spatial and semantic spatial designation identification
 - **Data Enrichment**: Multi-stage content enhancement and validation
 - **Batch Processing**: Efficient processing of large document collections
 
@@ -51,11 +51,11 @@ All database operations use the same models as the backend API, ensuring data co
 4. **Policy Extractor** (`policy_extractor.py`)
    - Policy identification and structure analysis
    - Policy metadata extraction
-   - Constraint detection and classification
+   - Spatial designation detection and classification
 
 5. **Knowledge Graph Builder** (`knowledge_graph.py`)
    - Policy relationship mapping
-   - Constraint network construction
+   - Spatial designation network construction
    - Graph visualization capabilities
 
 ### Processing Pipeline
@@ -63,7 +63,7 @@ All database operations use the same models as the backend API, ensuring data co
 ```
 PDF Documents → Text Extraction → Chunking → Content Analysis → Policy Extraction
      ↓                                                           ↓
-Vector Storage ← Embedding Generation ← Constraint Mapping ← Knowledge Graph
+Vector Storage ← Embedding Generation ← Spatial Designation Mapping ← Knowledge Graph
 ```
 
 ## Installation
@@ -183,7 +183,7 @@ All scripts use shared database models from `../../libs/shared_db_models/` for c
 4. **Content Analysis**
    - Content classification and tagging
    - Policy identification and extraction
-   - Constraint detection and mapping
+   - Spatial designation detection and mapping
 
 5. **Vector Generation**
    - High-quality embedding generation
@@ -192,7 +192,7 @@ All scripts use shared database models from `../../libs/shared_db_models/` for c
 
 6. **Knowledge Graph Construction**
    - Policy relationship identification
-   - Constraint network mapping
+   - Spatial designation network mapping
    - Graph visualization and export
 
 ## Configuration

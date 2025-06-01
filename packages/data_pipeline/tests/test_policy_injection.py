@@ -9,7 +9,7 @@ from libs.shared_db_models.plan_documents import PlanDocument
 from libs.shared_db_models.source_files import SourceFile
 from libs.shared_db_models.text_chunks import ExtractedTextChunk
 from libs.shared_db_models.policy_cross_links import PolicyCrossLink
-from libs.shared_db_models.constraints import Constraint
+from libs.shared_db_models.spatial_designations import SpatialDesignation
 from libs.shared_db_models.vectors import PolicyVector
 from libs.shared_db_models.logging import AIEnrichment, WriteLog
 

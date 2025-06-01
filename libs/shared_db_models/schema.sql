@@ -62,11 +62,11 @@ CREATE TABLE IF NOT EXISTS document_nodes (
 );
 
 --------------------------------------------------------------------------------
--- 3. SPATIAL CONSTRAINTS & SITES
+-- 3. SPATIAL DESIGNATIONS & SITES
 --------------------------------------------------------------------------------
 
--- 3.1 Constraints (policy‐derived or external)
-CREATE TABLE IF NOT EXISTS constraints (
+-- 3.1 Spatial Designations (policy‐derived or external)
+CREATE TABLE IF NOT EXISTS spatial_designations (
   id               UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
   name             TEXT        NOT NULL,
   type             TEXT        NOT NULL,   -- free‐text or from tags[]
@@ -77,11 +77,11 @@ CREATE TABLE IF NOT EXISTS constraints (
   created_at       TIMESTAMP   DEFAULT timezone('utc', now())
 );
 
--- 3.1.1 Derived geographic constraints (AI-extracted geographic mentions)
-CREATE TABLE IF NOT EXISTS derived_geographic_constraints (
+-- 3.1.1 Derived geographic spatial designations (AI-extracted geographic mentions)
+CREATE TABLE IF NOT EXISTS derived_geographic_spatial_designations (
   id            UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
   place_name    TEXT        NOT NULL,
-  constraint_id UUID        NOT NULL REFERENCES constraints(id) ON DELETE CASCADE,
+  spatial_designation_id UUID        NOT NULL REFERENCES spatial_designations(id) ON DELETE CASCADE,
   confidence    NUMERIC,
   created_at    TIMESTAMP   DEFAULT timezone('utc', now())
 );

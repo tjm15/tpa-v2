@@ -40,7 +40,7 @@ tpa-v2/
 
 ### Plan-Making Workspace
 - **Policy Development**: AI-assisted policy drafting and analysis tools
-- **Site Allocation**: Spatial analysis with constraint mapping and policy compliance
+- **Site Allocation**: Spatial analysis with spatial designation mapping and policy compliance
 - **Scenario Analysis**: Compare alternative development scenarios with trade-off analysis
 - **Goal Tracking**: Monitor strategic planning objectives and performance metrics
 - **Document Management**: Hierarchical document editing with integrity checks
@@ -50,7 +50,7 @@ tpa-v2/
 - **Policy Reasoning**: Step-through analysis linking policies to decisions
 - **Precedent Review**: Case law search and comparative analysis
 - **Report Generation**: AI-assisted officer report drafting
-- **Constraint Analysis**: Automated spatial constraint identification
+- **Spatial Designation Analysis**: Automated spatial designation identification
 
 ### AI-Powered Features
 - **Vector Search**: Semantic search across policies, applications, and precedents
